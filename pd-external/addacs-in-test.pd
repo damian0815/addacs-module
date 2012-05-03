@@ -2,8 +2,8 @@
 #X obj 60 6 loadbang;
 #X obj 296 37 addacs_in;
 #X obj 296 5 bang~;
-#X obj 296 171 line~;
-#X msg 296 138 \$1 3;
+#X obj 296 171 line;
+#X msg 296 138 \$1; 
 #X obj 296 70 / 256;
 #X obj 296 240 osc~;
 #X obj 296 109 * 880;
