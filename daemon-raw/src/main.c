@@ -4,6 +4,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <linux/i2c-dev.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
@@ -21,7 +22,7 @@ void cleanup()
 
 	// cleanup
 	if ( i2c_fd )
-		fclose( i2c_fd );
+		close( i2c_fd );
 	if ( sharedData )
 		munmap( sharedData, sizeof(IPCTestStruct ));
 	if ( mm_fd )
@@ -90,6 +91,15 @@ int main( int argc, char**argv )
 	}
 
 
+	int bytesRead =read( i2c_fd, buf, 6 ); 
+	printf( "requested %i, got %i, contents:\n", 6, bytesRead );
+	for ( int i=0; i<6; i++ )
+	{
+		printf("  %02x", buf[i] );
+	}
+	printf("\n");
+
+
 	// open shared memory with address '/ipc_test', readwrite, with a+rw permissions
 	mm_fd = shm_open( SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH );
 	if ( mm_fd < 0 )
@@ -132,16 +142,14 @@ int main( int argc, char**argv )
 		{
 			buf[0] = 0;
 			write( i2c_fd, buf, 1 );
-			int bytesRead = read( i2c_fd, buf, 6 ); 
+			int bytesRead =read( i2c_fd, buf, 6 ); 
 			for ( int i=0; i<4; i++ )
 				sharedData->inputs[i] = buf[i];
 			sharedData->readSequenceId++;
 			readCount--;
 		}
 
-	
-	
-		usleep( 100 );
+		usleep( 300);
 	}
 	
 	cleanup();
