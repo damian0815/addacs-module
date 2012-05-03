@@ -7,10 +7,12 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <signal.h>
 #include "IPCTestStruct.h"
 
 
-int mm_fd;
+int i2c_fd = -1;
+int mm_fd = -1;
 IPCTestStruct* sharedData = 0;
 int shouldStop = 0;
 
@@ -18,9 +20,19 @@ void cleanup()
 {
 
 	// cleanup
-	munmap( sharedData, sizeof(IPCTestStruct ));
-	close(mm_fd);
-	shm_unlink( SHM_NAME );
+	if ( i2c_fd )
+		fclose( i2c_fd );
+	if ( sharedData )
+		munmap( sharedData, sizeof(IPCTestStruct ));
+	if ( mm_fd )
+	{
+		close(mm_fd);
+		shm_unlink( SHM_NAME );
+	}
+	i2c_fd = -1;
+	mm_fd = -1;
+	sharedData = 0;
+
 	printf("cleaned up\n");
 }
 
@@ -48,12 +60,42 @@ int main( int argc, char**argv )
 	signal(SIGSEGV, interrupt );
 
 	printf("deamon running, shared memory address is %s\n", SHM_NAME );
-	// open shared memory with address '/ipc_test', readwrite, with a+rw permissions
 
+	
+	// open the i2c bus
+	char * filename = "/dev/i2c-2";
+	if ( (i2c_fd=open(filename, O_RDWR))<0 )
+	{	
+		fprintf(stderr, "error opening i2c-2: %d %s\n", errno, strerror(errno) );
+		return 1;
+	}
+
+	// nunchuck address
+	int addr=0x52; 
+	if ( ioctl(i2c_fd, I2C_SLAVE, addr) < 0 )
+	{
+		fprintf(stderr, "error assigning I2C slave address %x: %d %s", addr, errno, strerror(errno) );
+		cleanup();
+		return 1;
+	}
+
+	
+	// handshake with nunchuck
+	char buf[256];
+	buf[0] = 0x40;
+	buf[1] = 0x00;
+	if( write( i2c_fd, buf, 2 ) != 2 )
+	{
+		fprintf(stderr, "write to i2c failed: err %i %s\n", errno, strerror(errno) );
+	}
+
+
+	// open shared memory with address '/ipc_test', readwrite, with a+rw permissions
 	mm_fd = shm_open( SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH );
 	if ( mm_fd < 0 )
 	{
 		fprintf(stderr,"shm_open failed: err %i %s\n", errno, strerror(errno));
+		cleanup();
 		return 1;
 	}
 	
@@ -62,8 +104,7 @@ int main( int argc, char**argv )
 	if ( result < 0 )
 	{
 		fprintf(stderr,"ftruncate failed: err %i %s\n", errno, strerror(errno));
-		close( mm_fd );
-		shm_unlink( SHM_NAME );
+		cleanup();
 		return 1;
 	}
 
@@ -72,8 +113,7 @@ int main( int argc, char**argv )
 	if ( sharedData == NULL )
 	{
 		fprintf(stderr,"mmap failed: err %i %s\n", errno, strerror(errno));
-		close( mm_fd );
-		shm_unlink( SHM_NAME );
+		cleanup();
 		return 1;
 	}
 
@@ -85,19 +125,25 @@ int main( int argc, char**argv )
 	{
 		if ( sharedData->bShouldRead )
 		{
-			readCount = 1024;
+			readCount = 1;
 			sharedData->bShouldRead = 0;
 		}
 		if ( readCount > 0 )
 		{
+			buf[0] = 0;
+			write( i2c_fd, buf, 1 );
+			int bytesRead = read( i2c_fd, buf, 6 ); 
 			for ( int i=0; i<4; i++ )
-				sharedData->inputs[i] = sharedData->readSequenceId;
+				sharedData->inputs[i] = buf[i];
 			sharedData->readSequenceId++;
 			readCount--;
 		}
-		
-		usleep( 1*1000 );
+
+	
+	
+		usleep( 100 );
 	}
 	
-	}
+	cleanup();
+}
 

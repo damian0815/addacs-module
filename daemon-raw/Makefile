@@ -1,12 +1,14 @@
 
 SOURCES = $(shell echo src/*.c)
-OBJECTS = $(SOURCES:.c=.o)
+OBJDIR = obj
+OBJECTS = $(patsubst %,$(OBJDIR)/%,$(SOURCES:.c=.o))
 
 INCLUDES=-Isrc -I..
 CFLAGS+=$(INCLUDES) -std=c99 -Wall -Os 
-TARGET=daemon
+LDFLAGS+=-lrt
+TARGET=addacs-cv-daemon
 
-all: daemon
+all: $(TARGET)
 
 clean: 
 	rm $(OBJECTS) $(TARGET)
@@ -14,6 +16,9 @@ clean:
 $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $(TARGET)
 
+$(OBJDIR)/%.o: %.c
+	mkdir -p `dirname $@`
+	$(CC) -c $(CFLAGS) -o $@ $<
 #%.o: %.c 
 #	$(CC) -c $(CFLAGS) -c -o $@ $<
 
