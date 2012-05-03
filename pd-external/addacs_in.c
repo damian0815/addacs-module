@@ -15,6 +15,7 @@ static t_class *addacs_in_class;
 typedef struct _addacs_in {
 	t_object x_obj;
 	int mm_fd;
+	t_int channel;
 	IPCTestStruct* sharedData;
 
 } t_addacs_in;
@@ -49,17 +50,28 @@ void addacs_in_bang(t_addacs_in* x)
 	else
 	{
 		x->sharedData->bShouldRead = 1;
-		outlet_float(x->x_obj.ob_outlet, (float)x->sharedData->inputs[0] );
+		outlet_float(x->x_obj.ob_outlet, (float)x->sharedData->inputs[x->channel] );
 	}
 }
 
 
-void *addacs_in_new(void)
+void *addacs_in_new(t_floatarg channel )
 {
 	t_addacs_in* x = (t_addacs_in*)pd_new( addacs_in_class );
 
 	x->mm_fd = -1;
 	x->sharedData = NULL;
+	if ( channel > 4 || channel < 0 )
+	{
+		error( "[addacs_in] invalid channel %i: should be [0-4], defaulting to 0", (int)channel );
+		x->channel = 0;
+	}
+	else
+	{
+		post( "[addacs_in] reading from channel %i", (int)channel );
+		x->channel = channel;
+	}
+
 	outlet_new(&x->x_obj, &s_float);
 
 	return (void*)x;
