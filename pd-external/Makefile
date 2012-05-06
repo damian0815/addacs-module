@@ -1,4 +1,4 @@
-pd_linux: addacs_in.pd_linux
+pd_linux: addacs_in.pd_linux addacs_out.pd_linux
 
 .SUFFIXES: .pd_linux
 

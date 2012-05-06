@@ -1,4 +1,7 @@
 #N canvas 226 304 450 300 10;
-#X obj 42 46 r test;
-#X obj 45 86 print;
-#X connect 0 0 1 0;
+#X obj 42 46 netreceive 9999;
+#X obj 199 117 r other;
+#X obj 205 144 print other;
+#X obj 43 95 print netsend;
+#X connect 0 0 3 0;
+#X connect 1 0 2 0;

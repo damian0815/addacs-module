@@ -27,7 +27,7 @@ void addacs_in_openSharedData( t_addacs_in* x )
 	x->mm_fd = shm_open( SHM_NAME, O_RDWR, 0 );
 	if ( x->mm_fd < 0 )
 	{
-		fprintf(stderr, "shm_open failed: err %i %s\n", errno, strerror(errno));
+		error("[addacs_in] shm_open failed: err %i %s\n", errno, strerror(errno));
 	}
 	else
 	{
@@ -35,7 +35,7 @@ void addacs_in_openSharedData( t_addacs_in* x )
 		x->sharedData = (IPCTestStruct*)mmap(NULL, sizeof(IPCTestStruct), PROT_READ|PROT_WRITE, MAP_SHARED, x->mm_fd, 0);
 		if ( x->sharedData == NULL )
 		{
-			fprintf(stderr, "mmap failed: err %i %s\n",  errno, strerror(errno));
+			error("[addacs_in] mmap failed: err %i %s\n",  errno, strerror(errno));
 			close( x->mm_fd );
 			x->mm_fd = -1;
 		}
