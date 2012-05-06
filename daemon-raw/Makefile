@@ -6,7 +6,7 @@ OBJECTS = $(patsubst %,$(OBJDIR)/%,$(SOURCES:.c=.o))
 INCLUDES=-Isrc -I..
 CFLAGS+=$(INCLUDES) -std=c99 -Wall -Os 
 LDFLAGS+=-lrt
-TARGET=addacs-cv-daemon
+TARGET=addacs-daemon
 
 all: $(TARGET)
 
