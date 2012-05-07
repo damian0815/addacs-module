@@ -1,12 +1,12 @@
 
-SOURCES = $(shell echo src/*.c)
+SOURCES = $(shell echo *.c)
 OBJDIR = obj
 OBJECTS = $(patsubst %,$(OBJDIR)/%,$(SOURCES:.c=.o))
 
-INCLUDES=-Isrc -I..
+INCLUDES=-Isrc -I../..
 CFLAGS+=$(INCLUDES) -std=c99 -Wall -Os 
 LDFLAGS+=-lrt
-TARGET=addacs-cv-testclient
+TARGET=$(shell basename `pwd`)
 
 all: $(TARGET)
 
