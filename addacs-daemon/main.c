@@ -12,12 +12,14 @@
 #include "IPCTestStruct.h"
 
 
+//int nunchuck_fd = -1;
+//int adc_fd = -1;
 int i2c_fd = -1;
 int mm_fd = -1;
 IPCTestStruct* sharedData = 0;
 int shouldStop = 0;
-// adc has slave address 0x64 = 0b0110110
-#define ADC_ADDRESS 0b0110100
+// adc has slave address 0x34 = binary 0110100
+#define ADC_ADDRESS 0x33
 
 void interrupt()
 {
@@ -46,9 +48,9 @@ void i2c_close()
 
 
 // adc
-int adc_slaveAssign()
+int adc_slaveAssign( )
 {
-	if ( ioctl(i2c_fd, I2C_SLAVE, ADC_ADDRESS )<0 )
+	if ( ioctl(i2c_fd, I2C_SLAVE, ADC_ADDRESS)<0 )
 	{
 		perror("addacs_daemon: couldn't assign adc address");
 		return 1;
@@ -62,7 +64,7 @@ int adc_setup()
 		return 2;
 
 	uint8_t buf[3];
-	buf[0] = 0b10000000; // setup byte
+	buf[0] = (1<<7)|(1<<1); // setup byte
 
 	if( write( i2c_fd, buf, 1 ) != 1 )
 	{
@@ -89,7 +91,7 @@ int32_t adc_read( uint8_t channel )
 	// now cs3, cs2, cs1 select the channel
 	// everything else is 0
 	uint8_t buf[2];
-	buf[0] = 0b00000000; 
+	buf[0] = 0; 
 	buf[0] |= (channel << 2);
 	if( write( i2c_fd, buf, 1 ) != 1 )
 	{
@@ -246,10 +248,10 @@ int main( int argc, char**argv )
 	}
 
 	// setup the adc
-	if ( 0 != adc_setup() )
+/*	if ( 0 != adc_setup() )
 	{
 		return 1;
-	}
+	}*/
 	
 
 	
@@ -271,9 +273,9 @@ int main( int argc, char**argv )
 			for ( int i=0; i<3; i++ )
 				sharedData->inputs[i] = buf[i];
 
-//			uint32_t value = adc_read(0);
-//			if ( value >= 0 )
-//				sharedData->inputs[3] = value;
+			uint32_t value = adc_read(0);
+			if ( value >= 0 )
+				sharedData->inputs[3] = value;
 
 			sharedData->readSequenceId++;
 			readCount--;

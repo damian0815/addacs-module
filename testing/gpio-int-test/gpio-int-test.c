@@ -60,6 +60,7 @@ int gpio_export(unsigned int gpio)
 	len = snprintf(buf, sizeof(buf), "%d", gpio);
 	write(fd, buf, len);
 	close(fd);
+
  
 	return 0;
 }
@@ -218,8 +219,8 @@ int gpio_fd_close(int fd)
  ****************************************************************/
 int main(int argc, char **argv, char **envp)
 {
-	struct pollfd fdset[2];
-	int nfds = 2;
+	struct pollfd fdset[1];
+	int nfds = 1;
 	int gpio_fd, timeout, rc;
 	char *buf[MAX_BUF];
 	unsigned int gpio;
@@ -245,11 +246,8 @@ int main(int argc, char **argv, char **envp)
 	while (1) {
 		memset((void*)fdset, 0, sizeof(fdset));
 
-		fdset[0].fd = STDIN_FILENO;
-		fdset[0].events = POLLIN;
-      
-		fdset[1].fd = gpio_fd;
-		fdset[1].events = POLLPRI;
+		fdset[0].fd = gpio_fd;
+		fdset[0].events = POLLPRI;
 
 		rc = poll(fdset, nfds, timeout);      
 
@@ -262,14 +260,9 @@ int main(int argc, char **argv, char **envp)
 			printf(".");
 		}
             
-		if (fdset[1].revents & POLLPRI) {
-			len = read(fdset[1].fd, buf, MAX_BUF);
+		if (fdset[0].revents & POLLPRI) {
+			len = read(fdset[0].fd, buf, MAX_BUF);
 			printf("\npoll() GPIO %d interrupt occurred\n", gpio);
-		}
-
-		if (fdset[0].revents & POLLIN) {
-			(void)read(fdset[0].fd, buf, 1);
-			printf("\npoll() stdin read 0x%2.2X\n", (unsigned int) buf[0]);
 		}
 
 		fflush(stdout);
