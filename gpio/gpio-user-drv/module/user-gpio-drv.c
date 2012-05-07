@@ -166,7 +166,8 @@ int gpio_drv_ioctl( struct inode *inode, struct file *file, unsigned int cmd, un
 struct file_operations gpio_fops =
 {
     owner:      THIS_MODULE,
-    ioctl:      gpio_drv_ioctl,
+    unlocked_ioctl:      gpio_drv_ioctl,
+#warning "changed ioctl to unlocked_ioctl, dunno if this needs more work .. lock_kernel maybe"
 };
 
 /****************************************************************************

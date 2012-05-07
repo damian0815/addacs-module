@@ -10,8 +10,8 @@ SHARED_SONAME	= lib$(LIBNAME).so
 SHARED_LIBNAME	= lib$(LIBNAME).so
 STATIC_LIBNAME	= lib$(LIBNAME).a
 
-OVEROTOP	?= /home/gumstix/overo-oe
-CROSS_COMPILE	?= $(OVEROTOP)/tmp/cross/armv7a/bin/arm-angstrom-linux-gnueabi-
+#OVEROTOP	?= /home/gumstix/overo-oe
+#CROSS_COMPILE	?= $(OVEROTOP)/tmp/cross/armv7a/bin/arm-angstrom-linux-gnueabi-
 
 CC		= $(CROSS_COMPILE)gcc
 AR		= $(CROSS_COMPILE)ar

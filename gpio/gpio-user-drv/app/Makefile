@@ -6,8 +6,8 @@
 
 APPNAME		= gpio
 
-OVEROTOP	?= /home/gumstix/overo-oe
-CROSS_COMPILE	?= $(OVEROTOP)/tmp/cross/armv7a/bin/arm-angstrom-linux-gnueabi-
+#OVEROTOP	?= /home/gumstix/overo-oe
+#CROSS_COMPILE	?= $(OVEROTOP)/tmp/cross/armv7a/bin/arm-angstrom-linux-gnueabi-
 
 CC		= $(CROSS_COMPILE)gcc
 
