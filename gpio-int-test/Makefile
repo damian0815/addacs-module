@@ -6,11 +6,12 @@ OBJECTS = $(patsubst %,$(OBJDIR)/%,$(SOURCES:.c=.o))
 INCLUDES=-I..
 CFLAGS+=$(INCLUDES) -std=c99 -Wall -Os 
 LDFLAGS+=-lrt
-TARGET=addacs-daemon
+TARGET=$(shell basename `pwd`)
 
 all: $(TARGET)
 
 clean: 
+	echo $(TARGET)
 	rm $(OBJECTS) $(TARGET)
 
 $(TARGET): $(OBJECTS)
