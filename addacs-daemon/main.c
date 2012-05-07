@@ -12,9 +12,8 @@
 #include "IPCTestStruct.h"
 
 
-//int nunchuck_fd = -1;
-//int adc_fd = -1;
-int i2c_fd = -1;
+int nunchuck_fd = -1;
+int adc_fd = -1;
 int mm_fd = -1;
 IPCTestStruct* sharedData = 0;
 int shouldStop = 0;
@@ -26,31 +25,11 @@ void interrupt()
 	shouldStop = 1;
 }
 
-// i2c line handling
-int i2c_open()
-{
-	// open the i2c bus
-	char * filename = "/dev/i2c-2";
-	if ( (i2c_fd=open(filename, O_RDWR))<0 )
-	{	
-		fprintf(stderr, "error opening i2c-2: %d %s\n", errno, strerror(errno) );
-		return 1;
-	}
-	else
-		return 0;
-
-}
-
-void i2c_close()
-{
-	close( i2c_fd );
-}
-
 
 // adc
 int adc_slaveAssign( )
 {
-	if ( ioctl(i2c_fd, I2C_SLAVE, ADC_ADDRESS)<0 )
+	if ( ioctl(adc_fd, I2C_SLAVE, ADC_ADDRESS)<0 )
 	{
 		perror("addacs_daemon: couldn't assign adc address");
 		return 1;
@@ -60,13 +39,20 @@ int adc_slaveAssign( )
 
 int adc_setup()
 {
+	// open the i2c bus
+	char * filename = "/dev/i2c-2";
+	if ( (adc_fd=open(filename, O_RDWR))<0 )
+	{	
+		fprintf(stderr, "error opening i2c-2: %d %s\n", errno, strerror(errno) );
+		return 3;
+	}
 	if ( 0 != adc_slaveAssign() )
 		return 2;
 
 	uint8_t buf[3];
 	buf[0] = (1<<7)|(1<<1); // setup byte
 
-	if( write( i2c_fd, buf, 1 ) != 1 )
+	if( write( adc_fd, buf, 1 ) != 1 )
 	{
 		perror("addacs-daemon: failed to write adc setup byte" );
 		return 1;
@@ -81,8 +67,6 @@ int adc_setup()
 // returns -3 on failure to assign ADC as I2C slave
 int32_t adc_read( uint8_t channel )
 {
-	if ( adc_slaveAssign() != 0 )
-		return -3;
 	// according to max11612-7 datasheet, 
 	// cs[3-0] select the channel
 	// we are always differentional, and
@@ -93,13 +77,13 @@ int32_t adc_read( uint8_t channel )
 	uint8_t buf[2];
 	buf[0] = 0; 
 	buf[0] |= (channel << 2);
-	if( write( i2c_fd, buf, 1 ) != 1 )
+	if( write( adc_fd, buf, 1 ) != 1 )
 	{
 		fprintf(stderr,"addacs-daemon: failed to write adc chan %i selection byte: err %i %s", channel, errno, strerror(errno) );
 		return -1;
 	}
 	// now read
-	if ( read( i2c_fd, buf, 2 ) != 2 )
+	if ( read( adc_fd, buf, 2 ) != 2 )
 	{
 		fprintf(stderr,"addacs-daemon: failed to read 2 bytes from adc chan %i: err %i %s", channel, errno, strerror(errno) );
 		return -2;
@@ -120,9 +104,9 @@ int nunchuck_slaveAssign()
 {
 	// nunchuck address
 	int addr=0x52; 
-	if ( ioctl(i2c_fd, I2C_SLAVE, addr) < 0 )
+	if ( ioctl(nunchuck_fd, I2C_SLAVE, addr) < 0 )
 	{
-		fprintf(stderr, "error assigning I2C slave address %x: %d %s", addr, errno, strerror(errno) );
+		fprintf(stderr, "nunchuck_slaveAssign: error assigning I2C slave address %x: %d %s", addr, errno, strerror(errno) );
 		return 1;
 	}
 	return 0;
@@ -132,6 +116,13 @@ int nunchuck_slaveAssign()
 
 int nunchuck_setup()
 {
+	// open the i2c bus
+	char * filename = "/dev/i2c-2";
+	if ( (nunchuck_fd=open(filename, O_RDWR))<0 )
+	{	
+		fprintf(stderr, "error opening i2c-2: %d %s\n", errno, strerror(errno) );
+		return 3;
+	}
 	if ( nunchuck_slaveAssign()!= 0 )
 		return 1;
 	
@@ -139,7 +130,7 @@ int nunchuck_setup()
 	uint8_t buf[2];
 	buf[0] = 0x40;
 	buf[1] = 0x00;
-	if( write( i2c_fd, buf, 2 ) != 2 )
+	if( write( nunchuck_fd, buf, 2 ) != 2 )
 	{
 		fprintf(stderr, "write to i2c failed: err %i %s\n", errno, strerror(errno) );
 		return 2;
@@ -150,17 +141,14 @@ int nunchuck_setup()
 
 int nunchuck_read( uint8_t *buf )
 {
-	if ( 0 != nunchuck_slaveAssign() )
-		return 1;
-
 	buf[0] = 0;
-	if ( 1 != write( i2c_fd, buf, 1 ) )
+	if ( 1 != write( nunchuck_fd, buf, 1 ) )
 	{
 		perror( "nunchuck_read: write failed" );
 		return 2;
 	}
 
-	if( 6 != read( i2c_fd, buf, 6 ) )
+	if( 6 != read( nunchuck_fd, buf, 6 ) )
 	{
 		perror( "nunchuck read: read failed" );
 		return 3;	
@@ -173,8 +161,10 @@ void cleanup()
 {
 
 	// cleanup
-	if ( i2c_fd )
-		i2c_close();
+	if ( nunchuck_fd != -1 )
+		close( nunchuck_fd );
+	if ( adc_fd != -1  )
+		close( adc_fd );
 	if ( sharedData )
 		munmap( sharedData, sizeof(IPCTestStruct ));
 	if ( mm_fd )
@@ -182,7 +172,8 @@ void cleanup()
 		close(mm_fd);
 		shm_unlink( SHM_NAME );
 	}
-	i2c_fd = -1;
+	nunchuck_fd = -1;
+	adc_fd = -1;
 	mm_fd = -1;
 	sharedData = 0;
 
@@ -211,12 +202,6 @@ int main( int argc, char**argv )
 	printf("deamon running, shared memory address is %s\n", SHM_NAME );
 
 	
-	if ( 0 != i2c_open() )
-	{
-		return 1;
-	}
-
-
 	// open shared memory with address '/ipc_test', readwrite, with a+rw permissions
 	mm_fd = shm_open( SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH );
 	if ( mm_fd < 0 )
@@ -248,10 +233,10 @@ int main( int argc, char**argv )
 	}
 
 	// setup the adc
-/*	if ( 0 != adc_setup() )
+	if ( 0 != adc_setup() )
 	{
 		return 1;
-	}*/
+	}
 	
 
 	

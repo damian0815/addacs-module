@@ -70,7 +70,7 @@ int main()
 		sharedData->bShouldRead = 1;
 		for ( int i=0; i<4 ;i ++ )
 		{
-			printf("  %02x", sharedData->inputs[i] );
+			printf("  %04x", sharedData->inputs[i] );
 		}
 		printf("\r");
 		usleep(1*1000);
