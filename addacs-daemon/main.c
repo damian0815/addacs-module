@@ -11,6 +11,7 @@
 #include <signal.h>
 #include "IPCTestStruct.h"
 
+#define NUNCHUCK
 
 int nunchuck_fd = -1;
 int adc_fd = -1;
@@ -50,8 +51,8 @@ int adc_setup()
 		return 2;
 
 	uint8_t buf[3];
-	buf[0] = (1<<7)|(1<<1); // setup byte
-
+	// setup byte, bipolar, not RST, external reference
+	buf[0] = (1<<7)|(1<<2)|(1<<1)|(0x2<<4); 
 	if( write( adc_fd, buf, 1 ) != 1 )
 	{
 		perror("addacs-daemon: failed to write adc setup byte" );
@@ -77,6 +78,7 @@ int32_t adc_read( uint8_t channel )
 	uint8_t buf[2];
 	buf[0] = 0; 
 	buf[0] |= (channel << 2);
+	buf[0] |= 1; // single-ended
 	if( write( adc_fd, buf, 1 ) != 1 )
 	{
 		fprintf(stderr,"addacs-daemon: failed to write adc chan %i selection byte: err %i %s", channel, errno, strerror(errno) );
@@ -226,11 +228,13 @@ int main( int argc, char**argv )
 		return 1;
 	}
 
+#ifdef NUNCHUCK
 	// setup the nunchuck
 	if ( 0 != nunchuck_setup() )
 	{
 		return 1;
 	}
+#endif
 
 	// setup the adc
 	if ( 0 != adc_setup() )
@@ -254,9 +258,11 @@ int main( int argc, char**argv )
 		if ( readCount > 0 )
 		{
 
+#ifdef NUNCHUCK
 			nunchuck_read( buf );
 			for ( int i=0; i<3; i++ )
 				sharedData->inputs[i] = buf[i];
+#endif
 
 			uint32_t value = adc_read(0);
 			if ( value >= 0 )
@@ -266,7 +272,7 @@ int main( int argc, char**argv )
 			readCount--;
 		}
 
-		usleep( 300);
+		usleep( 1000);
 	}
 	
 }

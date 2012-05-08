@@ -4,7 +4,7 @@ OBJDIR = obj
 OBJECTS = $(patsubst %,$(OBJDIR)/%,$(SOURCES:.c=.o))
 
 INCLUDES=-Isrc -I../..
-CFLAGS+=$(INCLUDES) -std=c99 -Wall -Os 
+CFLAGS+=$(INCLUDES) -std=c99 -Wall -O3  -march=native 
 LDFLAGS+=-lrt
 TARGET=$(shell basename `pwd`)
 
