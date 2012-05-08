@@ -11,7 +11,7 @@
 #include <signal.h>
 #include "IPCTestStruct.h"
 
-#define NUNCHUCK
+//#define NUNCHUCK
 
 int nunchuck_fd = -1;
 int adc_fd = -1;
@@ -77,7 +77,7 @@ int32_t adc_read( uint8_t channel )
 	// everything else is 0
 	uint8_t buf[2];
 	buf[0] = 0; 
-	buf[0] |= (channel << 2);
+	buf[0] |= (channel << 1);
 	buf[0] |= 1; // single-ended
 	if( write( adc_fd, buf, 1 ) != 1 )
 	{
@@ -264,9 +264,8 @@ int main( int argc, char**argv )
 				sharedData->inputs[i] = buf[i];
 #endif
 
-			uint32_t value = adc_read(0);
-			if ( value >= 0 )
-				sharedData->inputs[3] = value;
+			for ( int i=0; i<8; i++ )
+				sharedData->inputs[i] = adc_read(i);
 
 			sharedData->readSequenceId++;
 			readCount--;

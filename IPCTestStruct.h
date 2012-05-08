@@ -19,8 +19,8 @@ typedef struct _IPCTestStruct
 	
 	unsigned char bShouldRead; // BOOL
 	unsigned char bShouldWrite; // BOOL
-	uint16_t inputs[4];
-	uint16_t outputs[4];
+	uint16_t inputs[8];
+	uint16_t outputs[8];
 	uint32_t readSequenceId;
 	
 } IPCTestStruct;
