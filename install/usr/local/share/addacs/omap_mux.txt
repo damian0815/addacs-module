@@ -1,0 +1,22 @@
+#i2c2_scl 
+#i2c2_sda
+mcbsp1_clkr 0x104
+mcbsp1_clkx 0x104
+mcbsp1_dr 0x104
+mcbsp1_dx 0x104
+mcbsp1_fsr 0x104
+mcbsp1_fsx 0x104
+mcbsp3_fsx 0x104
+#sdmmc2_clk
+#sdmmc2_cmd
+#sdmmc2_dat0
+#sdmmc2_dat1
+#sdmmc2_dat2
+#sdmmc2_dat3
+#sdmmc2_dat4
+#sdmmc2_dat5
+#sdmmc2_dat6
+#sdmmc2_dat7
+uart2_cts 0x104
+uart2_rts 0x104
+uart2_tx 0x104

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+grep -v '^[[:space:]]*#' omap_mux.txt | while read line; do 
+	set $line 
+	echo $2
+	cat /sys/kernel/debug/omap_mux/$1
+done
+
