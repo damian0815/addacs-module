@@ -5,10 +5,13 @@
 #include <sys/time.h>
 
 int alarmCount = 0;
+int overrunCount = 0;
+timer_t timer;
 
 void alarm( int signum )
 {
 	alarmCount++;
+	overrunCount += timer_getoverrun(timer);
 }
 
 int main()
@@ -22,7 +25,6 @@ int main()
 	
 
 	// create the timer
-	timer_t timer;
 	struct sigevent event;
 	event.sigev_notify = SIGEV_SIGNAL;
 	event.sigev_signo = SIGRTMIN;
@@ -35,7 +37,7 @@ int main()
 	struct itimerspec timerspec;
 	// 1ms intervals
 	timerspec.it_interval.tv_sec = 0;
-	timerspec.it_interval.tv_nsec = 1*1000;
+	timerspec.it_interval.tv_nsec = 1000*1000;
 	// 1ms from now
 	timerspec.it_value.tv_sec = 0;
 	timerspec.it_value.tv_nsec = 1000*1000;
@@ -64,7 +66,7 @@ int main()
 			timersub( &now, &start, &delta );
 			unsigned long millisSinceStart = delta.tv_sec*1000 + delta.tv_usec/(1000);
 
-			printf("alarms: %8i interval: %4fms\n", alarmCount, (float)millisSinceStart/alarmCount );
+			printf("alarms: %8i interval: raw %.4fms, w overruns %.4fms, overruns/signal %.4f\n", alarmCount, (float)millisSinceStart/alarmCount, (float)millisSinceStart/(alarmCount+overrunCount), (float)overrunCount/alarmCount );
 			t = now;
 			seconds++;
 		}
