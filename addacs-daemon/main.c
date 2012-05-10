@@ -12,12 +12,20 @@
 #include "IPCTestStruct.h"
 #include <time.h>
 #include <sys/time.h>
+#include <linux/spi/spidev.h>
+#include <linux/types.h>
+#include <stdint.h>
+#include <sys/ioctl.h>
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 
 //#define NUNCHUCK
 
 int nunchuck_fd = -1;
 int adc_fd = -1;
 int mm_fd = -1;
+int dac_fd = -1;
 IPCTestStruct* sharedData = 0;
 int shouldStop = 0;
 timer_t timer;
@@ -26,7 +34,9 @@ timer_t timer;
 
 void interrupt()
 {
-	shouldStop = 1;
+	cleanup();
+	exit(0);
+
 }
 
 
@@ -103,6 +113,54 @@ int32_t adc_read( uint8_t channel )
 
 }
 
+// adc 
+// AD5664 on SPI
+
+int dac_setup()
+{
+
+	dac_fd = open("/dev/spidev4.0", O_RDWR);
+	if ( dac_fd < 0 )
+	{
+		fprintf(stderr, "couldn't open /dev/spidev4.0: %i %s\n", errno, strerror(errno) );
+		return 1;
+
+	}
+	return 0;
+}
+
+int dac_write( uint8_t channel, uint16_t value )
+{
+	char buf[3];
+	buf[0] = 0;
+	buf[0] |= 0x3<<2; // c2-c0 011 = update channel n
+	buf[0] |= (channel&0x04); // a2-a0 000 = channel
+	buf[1] = value >> 8; // MSB
+	buf[2] = value & 0x00ff; // LSB
+
+	struct spi_ioc_transfer tr = {
+		.tx_buf = 0,
+		.rx_buf = (unsigned long)buf,
+		.len = ARRAY_SIZE(buf),
+		.delay_usecs = 0,
+		.speed_hz = 10000,
+		.bits_per_word = 24,
+	};
+
+	int ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
+	if ( ret <1 )
+	{
+		fprintf( stderr, "error writing to DAC: %i %s\n", errno, strerror(errno) );
+		return 1;
+	}
+	
+	return 0;
+
+}
+
+
+
+
 // nunchuck
 
 int nunchuck_slaveAssign()
@@ -164,12 +222,15 @@ int nunchuck_read( uint8_t *buf )
 // application
 void cleanup()
 {
+	timer_delete( timer );
 
 	// cleanup
 	if ( nunchuck_fd != -1 )
 		close( nunchuck_fd );
 	if ( adc_fd != -1  )
 		close( adc_fd );
+	if ( dac_fd != -1 )
+		close( dac_fd );
 	if ( sharedData )
 		munmap( sharedData, sizeof(IPCTestStruct ));
 	if ( mm_fd )
@@ -185,6 +246,8 @@ void cleanup()
 	printf("cleaned up\n");
 }
 
+unsigned long callCount = 0;
+unsigned long overrunCount = 0;
 void periodicFunction()
 {
 #ifdef NUNCHUCK
@@ -194,9 +257,22 @@ void periodicFunction()
 		sharedData->inputs[i] = buf[i];
 #endif
 
+/*	for ( int i=0; i<8; i++ )
+		sharedData->inputs[i] = adc_read(i);*/
 	for ( int i=0; i<8; i++ )
-		sharedData->inputs[i] = adc_read(i);
+		dac_write(i, sharedData->outputs[i] );
 
+	callCount++;
+	overrunCount += timer_getoverrun(timer);
+}
+
+void printOverrunStats()
+{
+	printf("addacs-daemon: periodicFunction called %lu times with %lu overruns\n", callCount, overrunCount );
+	printf("addacs-daemon: (%f overruns/call)\n",(float)overrunCount/callCount);
+	printf("addacs-daemon: - now resetting counters\n");
+	callCount = 0;
+	overrunCount = 0;
 }
 
 
@@ -217,6 +293,7 @@ int main( int argc, char**argv )
  	signal(SIGINT, interrupt );
 	signal(SIGTERM, interrupt );
 	signal(SIGSEGV, interrupt );
+	signal(SIGUSR1, printOverrunStats );
 
 
 	
@@ -248,16 +325,23 @@ int main( int argc, char**argv )
 	// setup the nunchuck
 	if ( 0 != nunchuck_setup() )
 	{
-		return 1;
+		return 3;
 	}
 #endif
 
-	// setup the adc
+	// setup the dac
+	if ( 0 != dac_setup() )
+	{
+		return 2;
+	}
+		// setup the adc
 	if ( 0 != adc_setup() )
 	{
 		return 1;
 	}
-	
+
+
+
 	// register signal handler
 	struct sigaction act;
 	act.sa_handler = periodicFunction;
@@ -277,7 +361,7 @@ int main( int argc, char**argv )
     struct itimerspec timerspec;
     // 1ms intervals
     timerspec.it_interval.tv_sec = 0;
-    timerspec.it_interval.tv_nsec = 2000*1000;
+    timerspec.it_interval.tv_nsec = 10000*1000;
     // 1ms from now
     timerspec.it_value.tv_sec = 0;
     timerspec.it_value.tv_nsec = 1000*1000;

@@ -68,10 +68,18 @@ int main()
 	while ( 1 )
 	{
 		sharedData->bShouldRead = 1;
+		printf("in: ");
 		for ( int i=0; i<4 ;i ++ )
 		{
 			printf("  %04x", sharedData->inputs[i] );
 		}
+		printf(" out: ");
+		for ( int i=0; i<4 ;i++ )
+		{
+			sharedData->outputs[i]++;
+			printf("  %04x", sharedData->outputs[i] );
+		}
+
 		printf("\r");
 		usleep(1*1000);
 	}
