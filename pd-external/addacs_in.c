@@ -49,8 +49,7 @@ void addacs_in_bang(t_addacs_in* x)
 		addacs_in_openSharedData( x );
 	else
 	{
-		x->sharedData->bShouldRead = 1;
-		outlet_float(x->x_obj.ob_outlet, (float)x->sharedData->inputs[x->channel] );
+		outlet_float(x->x_obj.ob_outlet, (float)x->sharedData->inputs[x->channel]/(1<<12) );
 	}
 }
 

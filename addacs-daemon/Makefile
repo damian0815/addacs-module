@@ -4,7 +4,7 @@ OBJDIR = obj
 OBJECTS = $(patsubst %,$(OBJDIR)/%,$(SOURCES:.c=.o))
 
 INCLUDES=-I..
-CFLAGS+=$(INCLUDES) -std=c99 -Wall -O3 -mcpu=native 
+CFLAGS+=$(INCLUDES) -std=gnu99 -Wall -Os -mcpu=native -g
 
 LDFLAGS+=-lrt
 TARGET=addacs-daemon

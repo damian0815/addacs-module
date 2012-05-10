@@ -10,6 +10,8 @@
 #include <string.h>
 #include <signal.h>
 #include "IPCTestStruct.h"
+#include <time.h>
+#include <sys/time.h>
 
 //#define NUNCHUCK
 
@@ -18,6 +20,7 @@ int adc_fd = -1;
 int mm_fd = -1;
 IPCTestStruct* sharedData = 0;
 int shouldStop = 0;
+timer_t timer;
 // adc has slave address 0x34 = binary 0110100
 #define ADC_ADDRESS 0x33
 
@@ -182,6 +185,20 @@ void cleanup()
 	printf("cleaned up\n");
 }
 
+void periodicFunction()
+{
+#ifdef NUNCHUCK
+	uint8_t buf[128];
+	nunchuck_read( buf );
+	for ( int i=0; i<3; i++ )
+		sharedData->inputs[i] = buf[i];
+#endif
+
+	for ( int i=0; i<8; i++ )
+		sharedData->inputs[i] = adc_read(i);
+
+}
+
 
 int main( int argc, char**argv )
 {
@@ -201,7 +218,6 @@ int main( int argc, char**argv )
 	signal(SIGTERM, interrupt );
 	signal(SIGSEGV, interrupt );
 
-	printf("deamon running, shared memory address is %s\n", SHM_NAME );
 
 	
 	// open shared memory with address '/ipc_test', readwrite, with a+rw permissions
@@ -242,36 +258,45 @@ int main( int argc, char**argv )
 		return 1;
 	}
 	
+	// register signal handler
+	struct sigaction act;
+	act.sa_handler = periodicFunction;
+	sigemptyset( &act.sa_mask );
+	act.sa_flags = 0;
+	sigaction( SIGRTMIN, &act, NULL );
 
+	// create the timer
+	struct sigevent event;
+	event.sigev_notify = SIGEV_SIGNAL;
+	event.sigev_signo = SIGRTMIN;
+	if ( 0 != timer_create( CLOCK_REALTIME, &event, &timer ) )
+	{
+		fprintf(stderr, "timer_create failed: %i %s\n", errno, strerror(errno) );
+		return 2;
+	}
+    struct itimerspec timerspec;
+    // 1ms intervals
+    timerspec.it_interval.tv_sec = 0;
+    timerspec.it_interval.tv_nsec = 2000*1000;
+    // 1ms from now
+    timerspec.it_value.tv_sec = 0;
+    timerspec.it_value.tv_nsec = 1000*1000;
+    // record start time
+    struct timeval start;
+    gettimeofday( &start, NULL );
+    // arm the timer
+    timer_settime( timer, NULL, &timerspec, NULL );
+
+
+	printf("deamon running, shared memory address is %s\n", SHM_NAME );
 	
 	int readCount = 0;
-	uint8_t buf[128];
 	
 	// main loop
 	while ( !shouldStop )
 	{
-		if ( sharedData->bShouldRead )
-		{
-			readCount = 1;
-			sharedData->bShouldRead = 0;
-		}
-		if ( readCount > 0 )
-		{
 
-#ifdef NUNCHUCK
-			nunchuck_read( buf );
-			for ( int i=0; i<3; i++ )
-				sharedData->inputs[i] = buf[i];
-#endif
-
-			for ( int i=0; i<8; i++ )
-				sharedData->inputs[i] = adc_read(i);
-
-			sharedData->readSequenceId++;
-			readCount--;
-		}
-
-		usleep( 1000);
+		sleep( 1 );
 	}
 	
 }

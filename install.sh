@@ -1,6 +1,9 @@
 #!/bin/bash
 
-rsync -r --progress install/usr/ /usr
-rsync -r --progress install/etc/ /etc
+dir=`dirname $0`
+cp $dir/pd-external/*.pd_linux $dir/install/usr/local/lib/addacs/
+sudo rsync -r --progress $dir/install/usr/ /usr
+sudo rsync -r --progress $dir/install/etc/ /etc
+
 
 
