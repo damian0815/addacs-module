@@ -1,3 +1,32 @@
+/* adapted from https://github.com/scottellis/spike/blob/master/spike.c */
+
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/fs.h>
+#include <linux/device.h>
+#include <linux/mutex.h>
+#include <linux/slab.h>
+#include <linux/cdev.h>
+#include <linux/spi/spi.h>
+#include <linux/string.h>
+#include <asm/uaccess.h>
+
+const char this_driver_name[] = "addacs-spi-adc";
+
+struct addacs_spi_dev {
+	struct semaphore spi_sem;
+	struct semaphore fop_sem;
+	dev_t devt;
+	struct cdev cdev;
+	struct class *class;
+	struct spi_device *spi_device;
+	char *user_buff;
+};
+
+static struct spike_dev spike_dev;
+
+
+
 /*  
  *  hello-1.c - The simplest kernel module.
  */
