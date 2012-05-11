@@ -275,9 +275,9 @@ void printOverrunStats()
 	overrunCount = 0;
 }
 
-
-int main( int argc, char**argv )
+void dump_clockres()
 {
+
 	clockid_t clockids[] = { CLOCK_REALTIME, 
 		CLOCK_MONOTONIC, 
 		CLOCK_MONOTONIC_RAW,
@@ -286,18 +286,30 @@ int main( int argc, char**argv )
 	for ( int i=0; i<5 ;i++ )
 	{
 		struct timespec ts;
-		int result = clock_getres( clockids[i], ts );
-		printf(" clock %i: res %lu:%lu (%f ms)\n", i, ts.tv_sec, ts.tv_nsec, (float)ts.tv_sec*1000+(float)ts.tv_nsec/(1000*1000) );
+		int result = clock_getres( clockids[i], &ts );
+		if ( result < 0 )
+			sprintf(stderr, "clock_getres() failed with clock %i: err %i %s\n", clockids[i], errno, strerror(errno) );
+		else
+			printf("clock %i: res %lu:%lu (%f ms)\n", clockids[i], ts.tv_sec, ts.tv_nsec, (float)ts.tv_sec*1000+(float)ts.tv_nsec/(1000*1000) );
 	}
 
-	exit(0);
 
+}
 
+int main( int argc, char**argv )
+{
 	int foreground = 0;
 	for ( int i=1; i<argc; i++ )
+	{
 		if ( strcmp(argv[i],"-f")==0 )
 			foreground = 1;
-
+		else if ( strcmp(argv[i], "-r")==0 )
+		{
+			dump_clockres();
+			exit(0);
+		}
+	}
+		
 	if ( !foreground )
 	{
 		if ( fork() != 0 ) 
