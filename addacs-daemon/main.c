@@ -36,6 +36,7 @@ timer_t timer;
 
 #define SPI_SPEED 100000
 #define SPI_BITS_PER_WORD 8
+#define SPI_MODE SPI_CPHA
 
 
 void cleanup();
@@ -133,21 +134,82 @@ int dac_setup()
 
 	}
 
-	int bits = SPI_BITS_PER_WORD;
-   int ret = ioctl( dac_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-   if (ret == -1)
-   {
-	   fprintf(stderr, "couldn't set SPI bits per word to %i: %i %s\n", bits, errno, strerror(errno) );
-	   return 2;
-   }
+	int mode = SPI_MODE;
+	int ret = ioctl( dac_fd, SPI_IOC_WR_MODE, &mode );
+	if ( ret == -1 )
+	{
+		fprintf(stderr, "couldn't set SPI write mode: %i %s\n", errno, strerror(errno) );
+		return 3;
+	}
 
-   int speed = SPI_SPEED;
-   ret = ioctl( dac_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed );
-   if ( ret == -1 )
-   {
-	   fprintf(stderr, "couldn't set SPI max write speed to %i: %i %s\n", speed );
-	   return 3;
-   }
+
+	int bits = SPI_BITS_PER_WORD;
+	ret = ioctl( dac_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+	if (ret == -1)
+	{
+		fprintf(stderr, "couldn't set SPI bits per word to %i: %i %s\n", bits, errno, strerror(errno) );
+		return 2;
+	}
+
+	int speed = SPI_SPEED;
+	ret = ioctl( dac_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed );
+	if ( ret == -1 )
+	{
+		fprintf(stderr, "couldn't set SPI max write speed to %i: %i %s\n", speed );
+		return 3;
+	}
+
+
+	// power on + init the DAC
+	uint8_t buf[3];
+	struct spi_ioc_transfer tr = {
+		.tx_buf = (unsigned long)buf,
+		.rx_buf = 0,
+		.len = ARRAY_SIZE(buf),
+		.delay_usecs = 0,
+		.speed_hz = SPI_SPEED,
+		.bits_per_word = SPI_BITS_PER_WORD,
+	};
+
+	// enable LDAC register
+	buf[0] = 0;
+	buf[0] |= 0x6<<3; // load LDAC register
+	buf[1] = 0;
+	buf[2] = 0x0f; // all channels update immediately
+	ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
+	if ( ret <1 )
+	{
+		fprintf( stderr, "error writing LDAC control to DAC: %i %s\n", errno, strerror(errno) );
+		return 4;
+	}
+
+	usleep( 100*1000 );
+	buf[0] = 0;
+	buf[0] |= 0x4 << 3; // POWER message
+	buf[1] = 0;
+	buf[2] = 0x0f; // all channels ON
+	ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
+	if ( ret < 1 )
+	{
+		fprintf( stderr, "error writing LDAC control to DAC: %i %s\n", errno, strerror(errno) );
+		return 5;
+	}
+	
+
+	usleep( 100*1000 );
+	buf[0] = 0;
+	buf[0] |= 0x5 << 3; // RESET message
+	buf[1] = 0;
+	buf[2] = 0; // clear DAC and input register only
+	ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
+	if ( ret < 1  )
+	{
+		fprintf( stderr, "error writing LDAC control to DAC: %i %s\n", errno, strerror(errno) );
+		return 6;
+	}
+	
+
+
 
 	return 0;
 }
@@ -156,8 +218,8 @@ int dac_write( uint8_t channel, uint16_t value )
 {
 	char buf[3];
 	buf[0] = 0;
-	buf[0] |= 0x3<<2; // c2-c0 011 = update channel n
-	buf[0] |= (channel&0x04); // a2-a0 000 = channel
+	buf[0] |= 0x3<<3; // c2-c0 011 = update channel n
+	buf[0] |= (channel&0x07); // a2-a0 000 = channel
 	buf[1] = value >> 8; // MSB
 	buf[2] = value & 0x00ff; // LSB
 
@@ -287,7 +349,7 @@ void periodicFunction()
 		sharedData->inputs[i] = adc_read(i);
 	
 	for ( int i=0; i<2; i++ )
-		dac_write(i, sharedData->outputs[i] );
+		dac_write( (0x07), sharedData->outputs[i] );
 
 	callCount++;
 	
@@ -466,7 +528,7 @@ int main( int argc, char**argv )
 			else
 				periodicFunction();
 			
-			uint64_t ns = 100*1000*1000;
+			uint64_t ns = 1*1000*1000;
 #ifndef NSEC_PER_SEC
 #define NSEC_PER_SEC    1000000000L
 #endif
