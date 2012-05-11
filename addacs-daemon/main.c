@@ -27,16 +27,17 @@ int adc_fd = -1;
 int mm_fd = -1;
 int dac_fd = -1;
 IPCTestStruct* sharedData = 0;
-int shouldStop = 0;
+uint8_t shouldStop = 0;
+uint8_t useTimers = 0;
 timer_t timer;
 // adc has slave address 0x34 = binary 0110100
 #define ADC_ADDRESS 0x33
 
 void interrupt()
 {
+	shouldStop = 1;
 	cleanup();
 	exit(0);
-
 }
 
 
@@ -222,7 +223,9 @@ int nunchuck_read( uint8_t *buf )
 // application
 void cleanup()
 {
-	timer_delete( timer );
+
+	if ( useTimers )
+		timer_delete( timer );
 
 	// cleanup
 	if ( nunchuck_fd != -1 )
@@ -257,13 +260,14 @@ void periodicFunction()
 		sharedData->inputs[i] = buf[i];
 #endif
 
-/*	for ( int i=0; i<8; i++ )
-		sharedData->inputs[i] = adc_read(i);*/
+	for ( int i=0; i<8; i++ )
+		sharedData->inputs[i] = adc_read(i);
 	for ( int i=0; i<8; i++ )
 		dac_write(i, sharedData->outputs[i] );
 
 	callCount++;
-	overrunCount += timer_getoverrun(timer);
+	
+	overrunCount += useTimers*timer_getoverrun(timer);
 }
 
 void printOverrunStats()
@@ -298,7 +302,7 @@ void dump_clockres()
 
 int main( int argc, char**argv )
 {
-	int foreground = 0;
+	uint8_t foreground = 0;
 	for ( int i=1; i<argc; i++ )
 	{
 		if ( strcmp(argv[i],"-f")==0 )
@@ -307,6 +311,10 @@ int main( int argc, char**argv )
 		{
 			dump_clockres();
 			exit(0);
+		}
+		else if ( strcmp(argv[i], "-t")==0 )
+		{
+			useTimers = 1;
 		}
 	}
 		
@@ -320,10 +328,8 @@ int main( int argc, char**argv )
  	signal(SIGINT, interrupt );
 	signal(SIGTERM, interrupt );
 	signal(SIGSEGV, interrupt );
-	signal(SIGUSR1, printOverrunStats );
 
 
-	
 	// open shared memory with address '/ipc_test', readwrite, with a+rw permissions
 	mm_fd = shm_open( SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH );
 	if ( mm_fd < 0 )
@@ -367,48 +373,79 @@ int main( int argc, char**argv )
 		return 1;
 	}
 
-
-
-	// register signal handler
-	struct sigaction act;
-	act.sa_handler = periodicFunction;
-	sigemptyset( &act.sa_mask );
-	act.sa_flags = 0;
-	sigaction( SIGRTMIN, &act, NULL );
-
-	// create the timer
-	struct sigevent event;
-	event.sigev_notify = SIGEV_SIGNAL;
-	event.sigev_signo = SIGRTMIN;
-	if ( 0 != timer_create( CLOCK_REALTIME, &event, &timer ) )
-	{
-		fprintf(stderr, "timer_create failed: %i %s\n", errno, strerror(errno) );
-		return 2;
-	}
-    struct itimerspec timerspec;
-    // 1ms intervals
-    timerspec.it_interval.tv_sec = 0;
-    timerspec.it_interval.tv_nsec = 10000*1000;
-    // 1ms from now
-    timerspec.it_value.tv_sec = 0;
-    timerspec.it_value.tv_nsec = 1000*1000;
-    // record start time
-    struct timeval start;
-    gettimeofday( &start, NULL );
-    // arm the timer
-    timer_settime( timer, NULL, &timerspec, NULL );
-
-
 	printf("deamon running, shared memory address is %s\n", SHM_NAME );
-	
-	int readCount = 0;
-	
-	// main loop
-	while ( !shouldStop )
-	{
 
-		sleep( 1 );
-	}
+	if ( useTimers )
+	{
+		signal(SIGUSR1, printOverrunStats );
 	
+		// register signal handler
+		struct sigaction act;
+		act.sa_handler = periodicFunction;
+		sigemptyset( &act.sa_mask );
+		act.sa_flags = 0;
+		sigaction( SIGRTMIN, &act, NULL );
+
+		// create the timer
+		struct sigevent event;
+		event.sigev_notify = SIGEV_SIGNAL;
+		event.sigev_signo = SIGRTMIN;
+		if ( 0 != timer_create( CLOCK_REALTIME, &event, &timer ) )
+		{
+			fprintf(stderr, "timer_create failed: %i %s\n", errno, strerror(errno) );
+			return 2;
+		}
+		struct itimerspec timerspec;
+		// 1ms intervals
+		timerspec.it_interval.tv_sec = 0;
+		timerspec.it_interval.tv_nsec = 10000*1000;
+		// 1ms from now
+		timerspec.it_value.tv_sec = 0;
+		timerspec.it_value.tv_nsec = 1000*1000;
+		// record start time
+		struct timeval start;
+		gettimeofday( &start, NULL );
+		// arm the timer
+		timer_settime( timer, NULL, &timerspec, NULL );
+
+		// main loop
+		while ( !shouldStop )
+		{
+
+			sleep( 1 );
+		}
+	
+	}
+	else // useTimers
+	{
+		// use clock_nanosleep()
+		struct timespec sleepTime;
+		struct timespec now;
+		// delay until 1ms from now
+		clock_gettime( CLOCK_MONOTONIC, &now );	
+		sleepTime = now;
+		// add 1 ms
+		int lastErr = 0;
+
+		while( !shouldStop )
+		{
+			if ( lastErr != EINTR )
+				periodicFunction();
+			else if ( lastErr != 0 )
+			{
+				perror("clock_nanosleep returned error %i %s\n", lastErr, strerror( lastErr ) );
+			}
+			
+			timespec_add_ns( sleepTime, 100*1000*1000 /* 1ms */ );
+
+			lastErr = clock_nanosleep( CLOCK_MONOTONIC,
+				TIMER_ABSTIME, &sleepTime, &remain );	
+
+		}
+
+	}
+
+	
+
 }
 

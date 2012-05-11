@@ -23,15 +23,9 @@ struct addacs_spi_dev {
 	char *user_buff;
 };
 
-static struct spike_dev spike_dev;
+static struct addacs_spi_dev addacs_spi_dev;
 
 
-
-/*  
- *  hello-1.c - The simplest kernel module.
- */
-#include <linux/module.h>	/* Needed by all modules */
-#include <linux/kernel.h>	/* Needed for KERN_INFO */
 
 int init_module(void)
 {
