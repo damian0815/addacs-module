@@ -33,11 +33,17 @@ timer_t timer;
 // adc has slave address 0x34 = binary 0110100
 #define ADC_ADDRESS 0x33
 
+
+#define SPI_SPEED 100000
+#define SPI_BITS_PER_WORD 8
+#define SPI_MODE SPI_CPHA
+
+
+void cleanup();
+
 void interrupt()
 {
 	shouldStop = 1;
-	cleanup();
-	exit(0);
 }
 
 
@@ -127,6 +133,84 @@ int dac_setup()
 		return 1;
 
 	}
+
+	int mode = SPI_MODE;
+	int ret = ioctl( dac_fd, SPI_IOC_WR_MODE, &mode );
+	if ( ret == -1 )
+	{
+		fprintf(stderr, "couldn't set SPI write mode: %i %s\n", errno, strerror(errno) );
+		return 3;
+	}
+
+
+	int bits = SPI_BITS_PER_WORD;
+	ret = ioctl( dac_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+	if (ret == -1)
+	{
+		fprintf(stderr, "couldn't set SPI bits per word to %i: %i %s\n", bits, errno, strerror(errno) );
+		return 2;
+	}
+
+	int speed = SPI_SPEED;
+	ret = ioctl( dac_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed );
+	if ( ret == -1 )
+	{
+		fprintf(stderr, "couldn't set SPI max write speed to %i: %i %s\n", speed );
+		return 3;
+	}
+
+
+	// power on + init the DAC
+	uint8_t buf[3];
+	struct spi_ioc_transfer tr = {
+		.tx_buf = (unsigned long)buf,
+		.rx_buf = 0,
+		.len = ARRAY_SIZE(buf),
+		.delay_usecs = 0,
+		.speed_hz = SPI_SPEED,
+		.bits_per_word = SPI_BITS_PER_WORD,
+	};
+
+	// enable LDAC register
+	buf[0] = 0;
+	buf[0] |= 0x6<<3; // load LDAC register
+	buf[1] = 0;
+	buf[2] = 0x0f; // all channels update immediately
+	ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
+	if ( ret <1 )
+	{
+		fprintf( stderr, "error writing LDAC control to DAC: %i %s\n", errno, strerror(errno) );
+		return 4;
+	}
+
+	usleep( 100*1000 );
+	buf[0] = 0;
+	buf[0] |= 0x4 << 3; // POWER message
+	buf[1] = 0;
+	buf[2] = 0x0f; // all channels ON
+	ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
+	if ( ret < 1 )
+	{
+		fprintf( stderr, "error writing LDAC control to DAC: %i %s\n", errno, strerror(errno) );
+		return 5;
+	}
+	
+
+	usleep( 100*1000 );
+	buf[0] = 0;
+	buf[0] |= 0x5 << 3; // RESET message
+	buf[1] = 0;
+	buf[2] = 0; // clear DAC and input register only
+	ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
+	if ( ret < 1  )
+	{
+		fprintf( stderr, "error writing LDAC control to DAC: %i %s\n", errno, strerror(errno) );
+		return 6;
+	}
+	
+
+
+
 	return 0;
 }
 
@@ -134,18 +218,18 @@ int dac_write( uint8_t channel, uint16_t value )
 {
 	char buf[3];
 	buf[0] = 0;
-	buf[0] |= 0x3<<2; // c2-c0 011 = update channel n
-	buf[0] |= (channel&0x04); // a2-a0 000 = channel
+	buf[0] |= 0x3<<3; // c2-c0 011 = update channel n
+	buf[0] |= (channel&0x07); // a2-a0 000 = channel
 	buf[1] = value >> 8; // MSB
 	buf[2] = value & 0x00ff; // LSB
 
 	struct spi_ioc_transfer tr = {
-		.tx_buf = 0,
-		.rx_buf = (unsigned long)buf,
+		.tx_buf = (unsigned long)buf,
+		.rx_buf = 0,
 		.len = ARRAY_SIZE(buf),
 		.delay_usecs = 0,
-		.speed_hz = 10000,
-		.bits_per_word = 24,
+		.speed_hz = SPI_SPEED,
+		.bits_per_word = SPI_BITS_PER_WORD,
 	};
 
 	int ret = ioctl( dac_fd, SPI_IOC_MESSAGE(1), &tr );
@@ -253,21 +337,25 @@ unsigned long callCount = 0;
 unsigned long overrunCount = 0;
 void periodicFunction()
 {
+
 #ifdef NUNCHUCK
 	uint8_t buf[128];
 	nunchuck_read( buf );
 	for ( int i=0; i<3; i++ )
 		sharedData->inputs[i] = buf[i];
 #endif
-
-	for ( int i=0; i<8; i++ )
+	
+	for ( int i=0; i<2; i++ )
 		sharedData->inputs[i] = adc_read(i);
-	for ( int i=0; i<8; i++ )
-		dac_write(i, sharedData->outputs[i] );
+	
+	for ( int i=0; i<2; i++ )
+		dac_write( (0x07), sharedData->outputs[i] );
 
 	callCount++;
 	
+	/*
 	overrunCount += useTimers*timer_getoverrun(timer);
+	*/
 }
 
 void printOverrunStats()
@@ -292,7 +380,7 @@ void dump_clockres()
 		struct timespec ts;
 		int result = clock_getres( clockids[i], &ts );
 		if ( result < 0 )
-			sprintf(stderr, "clock_getres() failed with clock %i: err %i %s\n", clockids[i], errno, strerror(errno) );
+			fprintf(stderr, "clock_getres() failed with clock %i: err %i %s\n", clockids[i], errno, strerror(errno) );
 		else
 			printf("clock %i: res %lu:%lu (%f ms)\n", clockids[i], ts.tv_sec, ts.tv_nsec, (float)ts.tv_sec*1000+(float)ts.tv_nsec/(1000*1000) );
 	}
@@ -377,6 +465,7 @@ int main( int argc, char**argv )
 
 	if ( useTimers )
 	{
+		printf("using timers\n");
 		signal(SIGUSR1, printOverrunStats );
 	
 		// register signal handler
@@ -414,35 +503,51 @@ int main( int argc, char**argv )
 
 			sleep( 1 );
 		}
+		printf("shouldStop != 0, exiting\n"); 
 	
 	}
-	else // useTimers
+	else // ! useTimers
 	{
+		printf("using clock_nanosleep()\n");
 		// use clock_nanosleep()
 		struct timespec sleepTime;
-		struct timespec now;
+		struct timespec remain;
 		// delay until 1ms from now
-		clock_gettime( CLOCK_MONOTONIC, &now );	
-		sleepTime = now;
+		clock_gettime( CLOCK_MONOTONIC, &sleepTime );	
 		// add 1 ms
 		int lastErr = 0;
 
 		while( !shouldStop )
 		{
-			if ( lastErr != EINTR )
-				periodicFunction();
+			if ( lastErr == EINTR )
+				printf("addacs-daemon interrupted\n");
 			else if ( lastErr != 0 )
 			{
-				perror("clock_nanosleep returned error %i %s\n", lastErr, strerror( lastErr ) );
+				fprintf(stderr, "clock_nanosleep returned error %i %s\n", lastErr, strerror( lastErr ) );
 			}
+			else
+				periodicFunction();
 			
-			timespec_add_ns( sleepTime, 100*1000*1000 /* 1ms */ );
+			uint64_t ns = 1*1000*1000;
+#ifndef NSEC_PER_SEC
+#define NSEC_PER_SEC    1000000000L
+#endif
+			lldiv_t div_result = lldiv( sleepTime.tv_nsec+ns, (uint64_t)NSEC_PER_SEC );
+			sleepTime.tv_sec += div_result.quot;
+			sleepTime.tv_nsec = div_result.rem;
+			/*
+			struct timespec now;
+			clock_gettime( CLOCK_MONOTONIC, &now );
+
+			printf("sleepTime is %lu:%lu, now is %lu:%lu\n", sleepTime.tv_sec, sleepTime.tv_nsec, now.tv_sec, now.tv_nsec );
+			*/
 
 			lastErr = clock_nanosleep( CLOCK_MONOTONIC,
 				TIMER_ABSTIME, &sleepTime, &remain );	
 
 		}
 
+		printf("shouldStop != 0, exiting\n"); 
 	}
 
 	
