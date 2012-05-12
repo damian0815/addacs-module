@@ -29,14 +29,16 @@ int dac_fd = -1;
 IPCTestStruct* sharedData = 0;
 uint8_t shouldStop = 0;
 uint8_t useTimers = 0;
+uint8_t doLoopback = 0;
 timer_t timer;
 // adc has slave address 0x34 = binary 0110100
 #define ADC_ADDRESS 0x33
 
 
-#define SPI_SPEED 100000
+#define SPI_SPEED 400000
 #define SPI_BITS_PER_WORD 8
 #define SPI_MODE SPI_CPHA
+//#define SPI_MODE SPI_CPOL
 
 
 void cleanup();
@@ -214,6 +216,42 @@ int dac_setup()
 	return 0;
 }
 
+int dac_writeMultiple( uint16_t* values, uint8_t numValues )
+{
+	struct spi_ioc_transfer trs[numValues];
+	char bufs[numValues][3];
+	
+	for ( int i=0; i<numValues; i++ )
+	{
+		char* buf = bufs[i];
+		buf[0] = 0;
+		buf[0] |= 0x3<<3; // c2-c0 011 = update channel n
+		buf[0] |= (i&0x07); // a2-a0 000 = channel
+		buf[1] = values[i] >> 8; // MSB
+		buf[2] = values[i] & 0x00ff; // LSB
+
+		struct spi_ioc_transfer tr = {
+			.tx_buf = (unsigned long)buf,
+			.rx_buf = 0,
+			.len = ARRAY_SIZE(buf),
+			.delay_usecs = 3,
+			.speed_hz = SPI_SPEED,
+			.bits_per_word = SPI_BITS_PER_WORD,
+		};
+		trs[i] = tr;
+	}
+
+	int ret = ioctl( dac_fd, SPI_IOC_MESSAGE(numValues), &trs );
+	if ( ret <1 )
+	{
+		fprintf( stderr, "error writing to DAC: %i %s\n", errno, strerror(errno) );
+		return 1;
+	}
+	
+	return 0;
+}
+
+
 int dac_write( uint8_t channel, uint16_t value )
 {
 	char buf[3];
@@ -227,7 +265,7 @@ int dac_write( uint8_t channel, uint16_t value )
 		.tx_buf = (unsigned long)buf,
 		.rx_buf = 0,
 		.len = ARRAY_SIZE(buf),
-		.delay_usecs = 0,
+		.delay_usecs = 3,
 		.speed_hz = SPI_SPEED,
 		.bits_per_word = SPI_BITS_PER_WORD,
 	};
@@ -345,11 +383,23 @@ void periodicFunction()
 		sharedData->inputs[i] = buf[i];
 #endif
 	
-	for ( int i=0; i<2; i++ )
+	for ( int i=0; i<4; i++ )
 		sharedData->inputs[i] = adc_read(i);
 	
-	for ( int i=0; i<2; i++ )
-		dac_write( (0x07), sharedData->outputs[i] );
+	if ( doLoopback ){
+		uint16_t values[4];
+		for ( int i=0; i<4; i++ )
+			values[i] = sharedData->inputs[i]<<4;
+		dac_writeMultiple(values, 4 );
+	}
+	else {
+		dac_writeMultiple( sharedData->outputs, 4 );	
+	}
+	/*dac_writeMultiple( doLoopback ? sh
+	for ( int i=0; i<4; i++ )
+		dac_write( i, doLoopback?sharedData->inputs[i]<<4:sharedData->outputs[i] );
+	//	dac_write( i, (callCount<<4)%0xffff );
+	//	*/
 
 	callCount++;
 	
@@ -404,6 +454,10 @@ int main( int argc, char**argv )
 		{
 			useTimers = 1;
 		}
+		else if ( strcmp(argv[i], "-l")==0 ) 
+		{
+			doLoopback = 1;
+		}
 	}
 		
 	if ( !foreground )
@@ -419,7 +473,7 @@ int main( int argc, char**argv )
 
 
 	// open shared memory with address '/ipc_test', readwrite, with a+rw permissions
-	mm_fd = shm_open( SHM_NAME, O_RDWR|O_CREAT, S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH );
+	mm_fd = shm_open( SHM_NAME, O_RDWR | O_CREAT |  O_EXCL, S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH );
 	if ( mm_fd < 0 )
 	{
 		fprintf(stderr,"shm_open failed: err %i %s\n", errno, strerror(errno));
@@ -528,7 +582,7 @@ int main( int argc, char**argv )
 			else
 				periodicFunction();
 			
-			uint64_t ns = 1*1000*1000;
+			uint64_t ns = 2*1000*1000;
 #ifndef NSEC_PER_SEC
 #define NSEC_PER_SEC    1000000000L
 #endif
