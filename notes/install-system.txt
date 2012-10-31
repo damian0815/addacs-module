@@ -1,0 +1,95 @@
+- install ubuntu from ubuntu-12.04-preinstalled-server-armhf+omap.img.gz
+
+- user/pass ubuntu/ubuntu
+- at tasksel prompt select Basic Ubuntu server, OpenSSH
+
+- date
+$ sudo date 0510194012 (MMDDhhmmyy)
+
+- setup wpa_supplicant
+$ wpa_passphrase ... 12dcc32296
+gives:
+network={
+        ssid="..."
+        #psk="12dcc32296"
+        psk=86a4d620a4ec781f22946fad02c6f637bc897c0528b6efaea0ea3d25ae57ad9e
+}
+
+
+edit /etc/wpa_supplicant.conf:
+
+ctrl_interface=/var/run/wpa_supplicant
+#ap_scan=2
+network={
+        ssid="..."
+        #psk="12dcc32296"
+        psk=86a4d620a4ec781f22946fad02c6f637bc897c0528b6efaea0ea3d25ae57ad9e
+        scan_ssid=1
+        proto=WPA RSN
+        key_mgmt=WPA-PSK
+        pairwise=CCMP TKIP
+        group=CCMP TKIP
+}
+
+
+edit /etc/network/interfaces:
+
+auto wlan0
+iface wlan0 inet dhcp
+wireless-essid ...
+pre-up wpa_supplicant -B -Dwext -iwlan0 -c/etc/wpa_supplicant.conf
+post-down killall -q wpa_supplicant
+
+
+. install avahi, vim, git
+
+$ sudo apt-get install avahi-daemon vim git-core
+
+
+. install alsa
+
+$ sudo apt-get install alsa-utils mpg123
+
+. start sound
+
+$ sudo modprobe snd_soc_omap
+$ sudo modprobe snd_soc_omap-mcbsp
+$ sudo modprobe snd_soc_omap3beagle
+$ sudo modprobe snd_soc_twl4030
+$ wget http://damianstewart.com/content/music/frey-seven.mp3
+$ aplay -l 
+$ mpg123 frey-seven.mp3 &
+$ amixer sset 'HeadsetR Mixer AudioL2' on
+$ amixer sset 'HeadsetR Mixer AudioR2' on
+
+$ alsamixer:
+enable "Analog Left AUXL" and "Analog Right AUXR" (spacebar)
+everything else disabled/0
+Analog = 0
+DAC Voice (both) = 0
+Left Digital Loopback/Right Digital Loopback = 0 (press '0' key)
+TX1 = Analog
+TX1 Digi = 0
+TX2 = Analog
+TX2 Digi = 0
+
+
+. install pd, jack
+
+$ sudo apt-get install puredata jackd
+select 'yes' to running jack with realtime priveliges
+
+. launch pd with jack:
+
+$ eval `dbus-launch --auto-syntax`
+$ jackd -d alsa -i 2 -o 2 &
+$ pd -jack -nogui -open <patch.pd>
+
+. build + install 3.2.16-omap kernel to enable i2c2
+
+. add user to audio and i2c groups
+$ usermod -a -G audio ubuntu
+$ usermod -a -G i2c ubuntu
+
+
+

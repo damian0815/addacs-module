@@ -1,0 +1,18 @@
+$ sudo modprobe i2c_dev
+$ ls /dev/i2c-*
+/dev/i2c-1
+/dev/i2c-3
+ ... /dev/i2c-2 is the one exposed by the expansion header, so need a kernel/u-boot that enables i2c-2
+
+
+to test if i2c-2 is working/has devices:
+$ i2cdetect -r 2
+
+communication with the daemon:
+Berkeley sockets: http://stackoverflow.com/questions/6721195/interprocess-communication-with-a-daemon
+DMA?: http://stackoverflow.com/questions/3072696/communication-between-processor-and-high-speed-perihperal
+memory mapped file
+
+-> build + install rcn-ee 3.2.16 kernel:
+uname = 3.2.16-omap
+

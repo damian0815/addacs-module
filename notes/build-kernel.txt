@@ -1,0 +1,30 @@
+building kernel rcn-ee 3.2.16
+
+. enable debugging dmesg on mux 
+
+edit arch/arm/mach-omap2/Makefile
+add CFLAGS_mux.o += -DDEBUG
+:
+﻿diff --git a/arch/arm/mach-omap2/Makefile b/arch/arm/mach-omap2/Makefile
+index b009f17..f61a671 100644
+--- a/arch/arm/mach-omap2/Makefile
++++ b/arch/arm/mach-omap2/Makefile
+@@ -12,6 +12,8 @@ hwmod-common				= omap_hwmod.o \
+ clock-common				= clock.o clock_common_data.o \
+ 					  clkt_dpll.o clkt_clksel.o
+ 
++CFLAGS_mux.o 	:=-DDEBUG
++
+ obj-$(CONFIG_ARCH_OMAP2) += $(omap-2-3-common) $(hwmod-common)
+ obj-$(CONFIG_ARCH_OMAP3) += $(omap-2-3-common) $(hwmod-common)
+ obj-$(CONFIG_ARCH_OMAP4) += prm44xx.o $(hwmod-common)
+
+
+. gpio pins  
+      
+setting direction to input/output selectable (ex for gpio157):
+$ echo 0x104 > /sys/kernel/debug/omap_mux/mcbsp1_fsr
+output:
+$ echo 0x4 > /sys/kernel/debug/omap_mux/mcbsp1_fsr
+
+

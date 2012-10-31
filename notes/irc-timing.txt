@@ -1,0 +1,1097 @@
+[6:52pm] corbomite left the chat room. (Ping timeout: 260 seconds)
+[6:58pm] aravind left the chat room. (Quit: Page closed)
+[6:59pm] mdp:
+my head is in a bad place, but I'm having such good time...
+[7:05pm] nick87 joined the chat room.
+[7:07pm] tor joined the chat room.
+[7:07pm] ppotera joined the chat room.
+[7:07pm] rcn-ee joined the chat room.
+[7:10pm] phantoxe left the chat room.
+[7:10pm] _chase_ joined the chat room.
+[7:11pm] bradfa left the chat room. (Quit: Ex-Chat)
+[7:14pm] bhthompson joined the chat room.
+[7:14pm] icota left the chat room. (Ping timeout: 260 seconds)
+[7:18pm] raster left the chat room. (Ping timeout: 245 seconds)
+[7:18pm] bhthompson left the chat room. (Ping timeout: 260 seconds)
+[7:19pm] W1N9Zr0 left the chat room. (Remote host closed the connection)
+[7:25pm] raster joined the chat room.
+[7:25pm] raster left the chat room. (Changing host)
+[7:25pm] raster joined the chat room.
+[7:26pm] jonmasters_ left the chat room. (Quit: ZNC - http://znc.sourceforge.net)
+[7:29pm] nick87 left the chat room. (Quit: Leaving)
+[7:29pm] W1N9Zr0 joined the chat room.
+[7:29pm] jonmasters joined the chat room.
+[7:30pm] damir__ left the chat room. (Quit: Leaving.)
+[7:30pm] bhthompson joined the chat room.
+[7:31pm] isbric:
+anyone know what to make out of this: zd1211rw 1-1:1.0: error ioread32(CR_REG1): -19
+[7:31pm] isbric:
+bone on external power, works just fine on usb power.
+[7:32pm] b7500af1 left the chat room. (Quit: Leaving)
+[7:35pm] b7500af1 joined the chat room.
+[7:37pm] jonmasters left the chat room. (Quit: ZNC - http://znc.sourceforge.net)
+[7:37pm] b7500af1 left the chat room. (Client Quit)
+[7:38pm] rcn-ee left the chat room. (Quit: Leaving)
+[7:41pm] pfefferz left the chat room. (Ping timeout: 252 seconds)
+[7:43pm] jonmasters joined the chat room.
+[7:43pm] b7500af1 joined the chat room.
+[7:44pm] pfefferz joined the chat room.
+[7:47pm] unsolo joined the chat room.
+[7:54pm] raster left the chat room. (Ping timeout: 252 seconds)
+[7:57pm] CanyonMan:
+I am getting a TON of these 'babble' error messages from musb and it is making me want to cry
+[7:57pm] CanyonMan:
+the thign that's weird is it seems to be at exactly a 22 second interval
+[7:57pm] CanyonMan:
+What the hell is that about?
+[7:57pm] raster joined the chat room.
+[8:00pm] TheAlphaNerd joined the chat room.
+[8:00pm] TheAlphaNerd left the chat room. (Changing host)
+[8:00pm] TheAlphaNerd joined the chat room.
+[8:02pm] mdp:
+usb guy says that's a h/w bug
+[8:09pm] harshpb joined the chat room.
+[8:09pm] mru:
+gptimer22?
+[8:10pm] Guest2072 left the chat room. (Remote host closed the connection)
+[8:10pm] mikey_w left the chat room. (Read error: Connection reset by peer)
+[8:11pm] mranostay:
+heh musb strikes again
+[8:12pm] mru:
+hasn't it had its 3 strikes yet?
+[8:12pm] ogra_:
+sysctl -e kernel.printk=0
+[8:12pm] ogra_:
+;)
+[8:13pm] jstearns74 left the chat room.
+[8:13pm] mru:
+that is an ubuntu-style fix
+[8:13pm] ogra_:
+heh
+[8:14pm] ogra_:
+at least it keeps your logs small
+[8:16pm] dENNES left the chat room. (Quit: Leaving.)
+[8:16pm] isbric:
+http://pastebin.com/ThkMqSTn
+[8:17pm] isbric:
+i dont even know where to start :(
+[8:26pm] Obur joined the chat room.
+[8:27pm] mdp:
+s/usb guy/usb sw guy/
+[8:29pm] koen:
+rumour has it that the babble is a hw problem
+[8:29pm] koen:
+but the jury is still out on that one
+[8:31pm] harshpb left the chat room. (Read error: Connection reset by peer)
+[8:31pm] _av500_:
+out drinking to forget
+[8:32pm] harshpb joined the chat room.
+[8:32pm] damir__ joined the chat room.
+[8:33pm] raster left the chat room. (Quit: Gettin' stinky!)
+[8:34pm] koen:
+av500, mru: what's the plan for linuxtag?
+[8:34pm] _av500_:
+none yet here
+[8:34pm] _av500_:
+I might pop in for one day
+[8:34pm] • mru 
+will be there
+[8:34pm] mru:
+same hotel as last year
+[8:36pm] koen:
+the russian one?
+[8:37pm] mru:
+abendstern
+[8:37pm] mru:
+yeah, the russian one
+[8:37pm] mru:
+cheap and clean enough to sleep in
+[8:38pm] mru:
+and close to the s/u-bahn
+[8:38pm] Obur left the chat room. (Quit: leaving)
+[8:41pm] dENNES joined the chat room.
+[8:42pm] CanyonMan:
+mdp: does the h/w bug = 22 seconds?
+[8:43pm] harshpb left the chat room. (Read error: Connection reset by peer)
+[8:43pm] spacecolonyone joined the chat room.
+[8:43pm] harshpb joined the chat room.
+[8:44pm] TheAlphaNerd left the chat room. (Quit: TheAlphaNerd)
+[8:44pm] spacecolonyone:
+hey guys any advice on boot faliure with the xMrevC after opkg update/upgrade.
+[8:45pm] _av500_:
+dont opkg upgrade
+[8:46pm] ericb2 joined the chat room.
+[8:46pm] ericb2 left the chat room. (Changing host)
+[8:46pm] ericb2 joined the chat room.
+[8:46pm] spacecolonyone:
+I'd just rebuilt a clean task-base-extended with bb and upgraded. looks like the upgrade tried moving me from 3.0.28->3.2.16 (which excites me) but without booting love.
+[8:46pm] _av500_:
+otherwise, pastebin boot logs etc..
+[8:46pm] mdp:
+CanyonMan: noise on the lines is what a babble interrupt is
+[8:46pm] unsolo_ joined the chat room.
+[8:47pm] spacecolonyone:
+kk av500 in a few, caffeine first
+[8:48pm] damian0815:
+hey guys
+[8:48pm] CanyonMan:
+huh.
+[8:48pm] CanyonMan:
+This is a usb cell card modem
+[8:48pm] CanyonMan:
+it doesn't even have a cable
+[8:48pm] CanyonMan:
+it plugs right into the bone
+[8:48pm] mdp:
+CanyonMan: mmm hmmm….
+[8:48pm] CanyonMan:
+I noticed that the 5V and 3.3V are fairly noisy
+[8:48pm] mdp:
+it has traces
+[8:48pm] mdp:
+and so does the bone
+[8:49pm] CanyonMan:
+I wonder if cleaning those up some would help
+[8:49pm] mdp:
+ask on the list, see what gerald says
+[8:49pm] mdp:
+fwiw, jkridner already raised another babble related issue internally…more issues on the list might generate some concern
+[8:50pm] unsolo left the chat room. (Ping timeout: 260 seconds)
+[8:50pm] isbric:
+CanyonMan: clening them up with somthing like a 1uf capacitor?
+[8:50pm] CanyonMan:
+yeah
+[8:50pm] isbric:
+let me know if you get some results.
+[8:51pm] CanyonMan:
+k
+[8:51pm] bhthompson left the chat room. (Quit: Leaving.)
+[8:53pm] tasslehoff joined the chat room.
+[8:55pm] tasslehoff:
+koen: fyi: ogre still works fine in the 2011.03 maintenance branch of oe-classic. I just messed things up every way I could :p
+[8:55pm] pfefferz left the chat room. (Ping timeout: 245 seconds)
+[8:57pm] corbomite joined the chat room.
+[8:57pm] damian0815:
+hey, does anyone if the beagle/omap3 i2c interface supports dma?
+[8:58pm] damian0815:
+^ anyone know if
+[8:58pm] prpplague:
+damian0815: do you really need dma to transfer at 100KHz?
+[8:58pm] prpplague:
+or even at 400Khz?
+[8:59pm] damian0815:
+no, but i don't really know what i'm doing so i'm trying to probe all the options ;-)
+[8:59pm] prpplague:
+damian0815: use what works first, then if there is a problem start looking at buzz words
+[9:00pm] damian0815:
+well, there's a problem. i need to read 8 12-bit DAC inputs and make them available to an audio DSP chain running on the CPU. i want a fresh DAC input reading for every audio buffer processed, ie (44100/64) reads per second
+[9:01pm] damian0815:
+i'm struggling with synchronization.
+[9:01pm] prpplague:
+damian0815: and you want to do this over i2c?
+[9:01pm] damian0815:
+not necessarily. but the DACs i've been testing so far have been i2c dacs.
+[9:01pm] Russ:
+damian0815, didn't I already do the math for you
+[9:01pm] Russ:
+damian0815, and wasn't it already explained that i2c is the control interface?
+[9:02pm] damian0815:
+Russ: i'm sorry?
+[9:02pm] spacecolonyone:
+_av500_: http://pastebin.com/mfm0K4Vn
+[9:02pm] • prpplague 
+sees this has already been discussed and goes back to work
+[9:02pm] damian0815:
+Russ: are you saying that i2c is not intended for use as a data transfer bus?
+[9:03pm] damian0815:
+apologies for not already knowing stuff!
+[9:03pm] damian0815:
+:-(
+[9:04pm] tasslehoff:
+normally you setup stuff by writing registers over i2c, and cool audio data starts flowing on some other pins from the dac
+[9:04pm] damian0815:
+i'm not reading audio data
+[9:04pm] florian joined the chat room.
+[9:04pm] damian0815:
+it's control voltage inputs from LFOs.
+[9:04pm] damian0815:
+only needs to be read at 1000hz or so.
+[9:05pm] spacecolonyone:
+as a side: I don't understand how u-boot now knows to go get the kernel image at /boot/uImage on the ext3 partition instead of using the one in boot partition. Was there a behind-the-scenes change in where u-boot looks over the past few months?
+[9:05pm] Russ:
+damian0815, did you actually read the datasheet for your dac?
+[9:05pm] damian0815:
+Russ: yes i did.
+[9:05pm] Russ:
+what dac?
+[9:06pm] azbarcea_ joined the chat room.
+[9:06pm] • tasslehoff 
+worked with audio before, and his mind is hardwired to think audio samples when he hears about a dac
+[9:06pm] damian0815:
+max11614
+[9:07pm] harshpb left the chat room. (Ping timeout: 260 seconds)
+[9:07pm] damian0815:
+8ch 12bit i2c
+[9:07pm] damian0815:
+to be clear:
+[9:08pm] Russ:
+ok, so that one isn't like an audio dac
+[9:08pm] Russ:
+the data interface is i2c
+[9:08pm] damian0815:
+Russ: yes, i know.
+[9:08pm] azbarcea left the chat room. (Ping timeout: 248 seconds)
+[9:08pm] mdp:
+thx for posting CanyonMan
+[9:08pm] damian0815:
+Russ: 'wasn't it already explained' :-P
+[9:08pm] Russ:
+you want 44.1k reads per second?
+[9:08pm] pfefferz joined the chat room.
+[9:08pm] damian0815:
+no, i want 1k reads per second, for each channel
+[9:09pm] CanyonMan:
+mdp: I'm not really even sure that adding more caps is going to help in any way.  I'm going to go tell my guy working on this to try an extension though and get the radio far away from the bone and see if that helps him.
+[9:09pm] agmlego:
+Why are we reading a DAC?
+[9:09pm] damian0815:
++ there'll be a similar adc with 8 outs
+[9:09pm] damian0815:
+we are making an analog modular synth module
+[9:09pm] agmlego:
+OK, but a DAC is an output device.
+[9:09pm] agmlego:
+No reason to read it.
+[9:09pm] agmlego:
+And an ADC is an input device.
+[9:09pm] damian0815:
+right yes sorry. adc/dac .
+[9:09pm] agmlego:
+YOu read an ADC, you write to a DAC.
+[9:09pm] damian0815:
+i swapped them over by mistake
+[9:09pm] Russ:
+you you want to read from 8 devices?
+[9:10pm] damian0815:
+i want 8 control voltage inputs, and i want 8 control voltage outputs
+[9:10pm] harshpb joined the chat room.
+[9:10pm] Russ:
+so you want to read from 8 devices, and write to 8 devices
+[9:10pm] damian0815:
+yes
+[9:10pm] Russ:
+so 16k updates per sec
+[9:11pm] damian0815:
+if that's achievable, yes
+[9:11pm] agmlego:
+I2C can run at 100kHz or 400kHz.
+[9:11pm] damian0815:
+i've set the i2c bus to 400khz
+[9:11pm] hvaibhav left the chat room. (Ping timeout: 248 seconds)
+[9:11pm] agmlego:
+Which is also the datarate in bits per second, including packet overhead.
+[9:11pm] damian0815:
+the issue is not i2c bus bandwidth
+[9:11pm] agmlego:
+So what is the issue?
+[9:12pm] damian0815:
+synchronizing the DAC process loop to the ADC inputs
+[9:12pm] Russ:
+you want a 16 bit number from/to each one?
+[9:12pm] damian0815:
+Russ: yes
+[9:12pm] Russ:
+16 * 16 * 1000 / 256k
+[9:12pm] Russ:
+hold on, address
+[9:12pm] damian0815:
+i'm happy to drop down to 4 in/ 4 out
+[9:12pm] Russ:
+384,000
+[9:12pm] Russ:
+hold on, start, stop, ack
+[9:13pm] Russ:
+448,000 bits per second
+[9:14pm] damian0815:
+ i'm happy to drop down to 4 in / 4 out and do the updates at 500hz or even 200 hz
+[9:14pm] damian0815:
+but this isn't really the issue
+[9:14pm] Russ:
+have you considered using one of the other serial buses for the data?
+[9:14pm] agmlego:
+SPI, or putting the two devices on different I2C busses.
+[9:14pm] agmlego:
+There are multiple I2C busses.
+[9:15pm] Russ:
+then what is the issue
+[9:15pm] harshpb left the chat room. (Ping timeout: 252 seconds)
+[9:15pm] damian0815:
+synchronisation. at the moment i'm using ioctl with a loop in userspace
+[9:16pm] agmlego:
+Synchronisation how?
+[9:16pm] agmlego:
+You want a packet in to trigger a packet out, or something like that?
+[9:16pm] jsabeaudry:
+damian0815, use a simultaneous sampling ADC if you want to have stuff synchronized (MAX11046 for example)
+[9:16pm] Russ:
+oh wait, hold on, let me factor in the possible clock stretch
+[9:16pm] Russ:
+8.3uS * 16 * 1000
+[9:17pm] mdp:
+damian0815: fwiw, omap3 i2c supports dma, but the linux driver doesn't bother
+[9:17pm] b7500af1 left the chat room. (Quit: Leaving)
+[9:17pm] Russ:
+so clock stretch adds another 132.8ms per second
+[9:17pm] agmlego:
+Russ: Who says the clock is being stretched?
+[9:17pm] agmlego:
+And by how much?
+[9:17pm] mdp:
+CanyonMan: yeah, I can't comment further..just passing along info..I've never used usb on Bone before, not interested in it
+[9:18pm] damian0815:
+agmlego: ok, so the DSP chain processes 64-frame audio chunks, but it processes them asynchronously. i was thinking of having a kernel module that filled a buffer once every 1ms (or 2ms, depending on bandwidth), and then allow the DSP access to this buffer via shared memory as it needed to.
+[9:18pm] agmlego:
+Russ: I think you are derailing the discussion here, to be honest.
+[9:18pm] agmlego:
+damian0815: OK...
+[9:18pm] damian0815:
+but obviously i don't want to be polling/sleeping in a kernel module. hence the idea of DMA. perhaps i don't understand it, but i was just looking for some pointers.
+[9:18pm] agmlego:
+damian0815: Ah, I see. Sleeping should work fine in the kernel--that is how a lot of daemons run, works fine.
+[9:18pm] bradfa joined the chat room.
+[9:19pm] Russ:
+damian0815, i2c does its work for you and then gives an interrupt when it's done
+[9:20pm] damian0815:
+agmlego: the regularity is the important thing here. i want the ADC samples to be taken in sync with real-world time, i was assuming i'd have to manage that from the module itself.
+[9:20pm] pfefferz left the chat room. (Read error: Operation timed out)
+[9:20pm] agmlego:
+damian0815: That may be, or use the RTC on the board and use the ALARM signal on Linux to get super-precise timing.
+[9:21pm] ppotera left the chat room. (Quit: ppotera)
+[9:21pm] agmlego:
+damian0815: Or if it is *really* critical, write the daemon as a realtime task and use the realtime extensions to the kernel.
+[9:21pm] damian0815:
+if it helps, the overview is to build a module that will sit in a modular analog synthesis setup, that accepts control voltage signals from external (analog) LFOs and processes audio in-sync in realtime.
+[9:21pm] Russ:
+damian0815, have you instrumented the omap i2c driver yet?
+[9:21pm] damian0815:
+ALARM signal. thanks.
+[9:22pm] damian0815:
+Russ: yes i have. works fine reading only one ADC channel, has a habit of annihilating the sound driver on buffer underrun.
+[9:22pm] damian0815:
+esp. with a usb wlan device.
+[9:22pm] Russ:
+"annihilating"?
+[9:22pm] damian0815:
+yeah. audio just stops.
+[9:22pm] Russ:
+you don't need to instrument every xfer
+[9:23pm] tasslehoff left the chat room. ("WeeChat 0.3.7")
+[9:23pm] Russ:
+just have it do every few thousand
+[9:23pm] damian0815:
+what does 'instrument' mean in this context?
+[9:23pm] Russ:
+printk with timing information
+[9:23pm] agmlego:
+I am confused about that myself.
+[9:23pm] damian0815:
+err, i'm not printking anything
+[9:23pm] Russ:
+he seems to be very concerned with variable latency
+[9:23pm] Russ:
+then have have you instrumented the omap i2c driver?
+[9:24pm] damian0815:
+i don't understand your question, i'm sorry.
+[9:24pm] agmlego:
+damian0815: I think Russ means by "instrumenting the driver", have you done timing analysis of the driver?
+[9:24pm] agmlego:
+As in, have you attempted to figure out where the latencies you are having issues with are coming from?
+[9:24pm] damian0815:
+agmlego: thanks for the clarification. no i haven't.
+[9:25pm] Russ:
+you seem very concerned about timing, but you haven't really said what your timing requirements or problems are
+[9:25pm] Russ:
+just vague statements
+[9:25pm] agmlego:
+damian0815: Then how do you know you have a solvable timing issue?
+[9:25pm] agmlego:
+Or one at all?
+[9:25pm] Russ:
+"in sync with real-world time" isn't something that can be met
+[9:25pm] Russ:
+you will always have jitter
+[9:26pm] agmlego:
+Russ: You can get pretty close with either a signal-edge trigger, or an RTC.
+[9:26pm] agmlego:
+Depending on what "real-world time" means.
+[9:26pm] Russ:
+yahoo, I got it within a second, I'm done!
+[9:26pm] Russ:
+or did you want femtoseconds?
+[9:26pm] Russ:
+you need a jitter and latency budget
+[9:26pm] damian0815:
+by 'in sync with real world' i meant 'sampled at regular intervals'
+[9:27pm] Russ:
+again, meaningless
+[9:27pm] Russ:
+what is "regular"
+[9:27pm] agmlego:
+So, not actually in sync with real-world time at all.
+[9:27pm] agmlego:
+Just sampled at the same time interval.
+[9:27pm] Russ:
+"regular" is a measure of your jitter
+[9:27pm] agmlego:
+Use the RTC, and the ALARM signal.
+[9:27pm] Russ:
+and "sampled" is a measure of your latency
+[9:28pm] Russ:
+agmlego, why the hell would you use RTC and ALARM?
+[9:28pm] Russ:
+why not just clock_gettime
+[9:28pm] agmlego:
+Russ: Because that has to use a busy loop.
+[9:28pm] Russ:
+damian0815, if each sample jitters by 500ms, is that regular enough?
+[9:28pm] agmlego:
+The ALARM signal is a timer interrupt, far more accurate.
+[9:28pm] pfefferz joined the chat room.
+[9:28pm] damian0815:
+Russ: no, 10ms is the max jitter
+[9:28pm] agmlego:
+And it means the daemon can be idle, off CPU while waiting.
+[9:29pm] Russ:
+agmlego, it isn't a timer interrupt, its just a signal
+[9:29pm] Russ:
+damian0815, hooray, we have a jitter budget
+[9:29pm] Russ:
+damian0815, is that end to end?
+[9:29pm] agmlego:
+Russ: Sorry, I accidentally a word. The word "like" should be in there.
+[9:29pm] agmlego:
+As min, the signal can be used *like* a timer interrupt.
+[9:29pm] Russ:
+agmlego, the kernel is pretty free to add a lot of jitter to that
+[9:30pm] agmlego:
+Russ: Not as much as 10ms though.
+[9:30pm] Russ:
+the man page lists the time as a minimum, nothing about the maximum
+[9:30pm] agmlego:
+And especially not with the RT extensions.
+[9:30pm] agmlego:
+And I am talking about personal experience here on several projects.
+[9:30pm] Russ:
+I think you'd get the same thing out of select and you wouldn't need signals
+[9:31pm] damian0815:
+Russ: 'end to end' i'm going to assume that 'yes' is the correct answer to that question.
+[9:31pm] agmlego:
+Russ: "select"?
+[9:31pm] Russ:
+or poll, or pselect
+[9:31pm] agmlego:
+Sure, Tim Toady always shows up.
+[9:32pm] agmlego:
+Was I supposed to enumerate a comprehensive list of ways to accomplish this?
+[9:32pm] pfefferz left the chat room. (Read error: Operation timed out)
+[9:33pm] Russ:
+signals are no fun
+[9:33pm] Russ:
+select is much much easier
+[9:34pm] agmlego:
+If you say so. ;-P
+[9:34pm] damian0815:
+ok thanks for the pointers folks... i'm going to go research the ALARM timer and see if i can get something out of that.
+[9:34pm] mru:
+Russ: epoll!
+[9:34pm] Russ:
+course nanosleep is even easier
+[9:34pm] • agmlego 
+deals with low-level stuff, and so signals are second nature.
+[9:34pm] agmlego:
+damian0815: ALARm *signal*
+[9:34pm] mru:
+SIGIRQ
+[9:34pm] jsabeaudry:
+Russ, won't sleep induce drift?
+[9:34pm] damian0815:
+agmlego: right you are. thanks.
+[9:35pm] Russ:
+or clock_nanosleep
+[9:35pm] mru:
+jsabeaudry: yes, it will
+
+
+
+
+
+
+
+[8:53pm] mru:
+aholler: I have several rare revs
+[8:53pm] damian0815:
+hiwa: ok, in Russ terms that's your 'jitter' rather than 'latency'
+[8:54pm] florian joined the chat room.
+[8:54pm] hiwa:
+aholler: thanks man
+[8:54pm] damian0815:
+hiwa: probably not a lot you can do about that, except for increasing the priority. this is why i'm using timer_create() and timer_set(), it seems to minimize my jitter
+[8:54pm] mdp:
+s/Russ terms/standard terms/
+[8:55pm] mru:
+press da tab, bro
+[8:55pm] rcranetx1 joined the chat room.
+[8:55pm] djlewis:
+in USA we pull tab, take drink :)
+[8:56pm] hiwa:
+damian0815: a jitter? how strange, i didn't think about that , hmmmm
+[8:57pm] aholler:
+whenever you call a system-function from userspace it's likely that your timeslice will end
+[8:57pm] jpsaman left the chat room. (Quit: Leaving)
+[8:57pm] djlewis:
+in Afganistan, pull tab, throw, dive in hole
+[8:58pm] rcranetx left the chat room. (Ping timeout: 255 seconds)
+[8:58pm] damian0815:
+aholler: i assume i'd use hrtimer in a module instead of timer_create() &c.?
+[8:58pm] hiwa:
+damian0815: is it difficult to use timer_create() and timer_set()? how it works?
+[8:59pm] damian0815:
+hiwa: no it's straight-forward.
+[8:59pm] hiwa:
+damian0815: any doc?
+[8:59pm] damian0815:
+hiwa: lots!
+[8:59pm] hiwa:
+damian0815: like?
+[8:59pm] damian0815:
+the man pages are surprisingly good.
+[8:59pm] rcranetx1 left the chat room. (Remote host closed the connection)
+[9:00pm] pfefferz left the chat room. (Ping timeout: 252 seconds)
+[9:00pm] aholler:
+damian0815: I've talked about userspace. in kernel-space there are many other ways.
+[9:00pm] rcranetx joined the chat room.
+[9:01pm] alexandersalas1 joined the chat room.
+[9:01pm] hiwa:
+damian0815: in this command: chrt -p -f 50 <pid>, that is pic? that is i2c module?
+[9:02pm] damian0815:
+aholler: right. ideally i want a function to be called once every 1ms and that function to make some read/write i2c and spi calls (<24 bytes of data). low jitter is important.. what would you recommend?
+[9:02pm] aholler:
+damian0815: e.g. if you do i2cread();filewrite();gettime();i2cread() it's likely that your thread will give up his slice in write and gettime too
+[9:02pm] icota left the chat room. (Ping timeout: 260 seconds)
+[9:02pm] aholler:
+(in userspace)
+[9:02pm] errordeveloper joined the chat room.
+[9:02pm] alexandersalas1 left the chat room. (Client Quit)
+[9:03pm] damian0815:
+aholler: userspace understood, thx :-) it's kernel space that's new to me
+[9:03pm] rcranetx1 joined the chat room.
+[9:03pm] _av500_:
+in kernel space nobody hears you cry
+[9:04pm] • mdp 
+queues ominous music
+[9:04pm] aholler:
+in kernel-space I would just c&p the i2c-driver and modify it for such stuff
+[9:05pm] damian0815:
+? is the i2c driver driven by a periodic timer? confused.
+[9:05pm] alexandersalas left the chat room. (Ping timeout: 248 seconds)
+[9:05pm] aholler:
+don't know, I would think it uses irqs.
+[9:05pm] risca joined the chat room.
+[9:05pm] damian0815:
+hiwa: pid is the pid of your app.
+[9:05pm] rcranetx left the chat room. (Ping timeout: 252 seconds)
+[9:05pm] hiwa:
+damian0815: do you know for i2c ?
+[9:06pm] damian0815:
+hiwa: cd my_program_directory; make; chrt -f 50 ./my_program
+[9:06pm] damian0815:
+hiwa: will start ./my_program with priority -50, FIFO scheduler
+[9:08pm] hiwa:
+damian0815: I didn't get it actually, you mean I should change priority of i2c-2 file?
+[9:08pm] damian0815:
+hiwa: no you change the priority of your program, ie the code that is CALLING open()/read()
+[9:09pm] damian0815:
+aholler: right.. so since i want my function to be run once every 1ms with low jitter, i could use hrtimer, or are you suggesting setting up an IRQ line to fire once every 1ms?
+[9:10pm] aholler:
+don't know. I would add a timestamp in the driver to be able to calculate the jitter
+[9:10pm] calculus left the chat room. (Ping timeout: 252 seconds)
+[9:10pm] hiwa:
+damian0815: so, if my executable file name is imu, so i should write chrt -f 50 ./imu?
+[9:10pm] damian0815:
+hiwa: yep
+[9:11pm] aholler:
+damian0815: so at least you have exact times when something was read.
+[9:11pm] damian0815:
+aholler: right, but it seems i still need a mechanism to trigger the read periodically
+[9:12pm] aholler:
+and the rest depends on what your system should be able to do. you could just trigger one read after another.
+[9:12pm] damian0815:
+i c.
+[9:12pm] hiwa:
+damian0815: thanks a lot man :)
+[9:12pm] damian0815:
+hiwa: n/p :-)
+[9:12pm] damian0815:
+my requirements are complicated i guess.
+[9:12pm] Russ:
+damian0815, hiwa, if you want less latency, you probably want to setup a series of xfers with ioctl
+[9:13pm] Russ:
+it'd be a lot less kernel/userspace round trips
+[9:13pm] damian0815:
+Russ: my problem is basically the low-latency-audio problem but with less data
+[9:13pm] damian0815:
+Russ: so bigger buffers are bad.
+[9:14pm] Russ:
+yes, but write then read is a waste
+[9:14pm] damian0815:
+it's complicated by the fact that i ALSO need to be running low-latency-audio
+[9:14pm] Russ:
+try I2C_RDWR
+[9:14pm] aleek:
+guys, there are so many beagle repos woth u-boot I don't know which one will have valid u-boot for bb-xM - can you point me right one? (ive tried 2 of them, u-boot main too but its not working)
+[9:14pm] aleek:
+is https://github.com/beagleboard/u-boot the main repo?
+[9:14pm] Russ:
+or at the very least I2C_SMBUS
+[9:14pm] pfefferz joined the chat room.
+[9:14pm] aholler:
+aleek: "not working" isn't very usefull as information
+[9:15pm] aholler:
+mainline u-boot from denx.de should work
+[9:15pm] aleek:
+aholler: Its compilable, but hags on "Loading u-boot.bin from mmc" - the one from denx.de
+[9:15pm] Crofton|work:
+any idea what this should be:Physical address of main memory (PHYS_OFFSET) [] (NEW)
+[9:15pm] aleek:
+hangs*
+[9:16pm] rcn-ee:
+it should actually be looking for u-boot.img.. did you update the MLO file?
+[9:16pm] aleek:
+nope,
+[9:16pm] rcn-ee:
+(pastebin your serial log)
+[9:16pm] mdp:
+aleek, I use denx.de just fine..but with u-boot.img
+[9:17pm] aleek:
+http://pastebin.com/G0xmn5Yi
+[9:17pm] dowlers joined the chat room.
+[9:17pm] hiwa left the chat room. (Ping timeout: 245 seconds)
+[9:17pm] rcn-ee:
+yeah, to old.. use the MLO from your build dir..
+[9:17pm] damian0815:
+aleek: which xM do you have? Rev A, B, C?
+[9:17pm] aleek:
+rev C
+[9:17pm] mdp:
+aleek, you're going to quit using your x-loader build for MLO as rcn-ee points out
+[9:18pm] damian0815:
+aleek: ok, there was something about rev C u-boot being different, with a link, on one of the Ubuntu wiki install pages, i can't find it now though.
+[9:18pm] dowlers left the chat room. (Client Quit)
+[9:18pm] mdp:
+aleek, x-loader is deprecated by u-boot spl.
+[9:18pm] rcn-ee:
+and the world rejoiced. ;)
+[9:19pm] mdp:
+rcn-ee: amen to that
+[9:19pm] TheAlphaNerd joined the chat room.
+[9:19pm] damian0815:
+what would be a good started point to copy/paste for a kernel module that needs to do something periodically, with period 1-5ms?
+[9:19pm] ppotera left the chat room. (Quit: ppotera)
+[9:20pm] mdp:
+damian0815: rev B and rev C, no problem with mainline u-boot as is ;)
+[9:20pm] Russ:
+damian0815, I still think the first point is to see how long the omap i2c kernel driver is actually taking in it's current state
+[9:20pm] damian0815:
+mdp: aaah, but which of the binaries floating around is 'mainline'? they're always just downloadable u-boot.img, rarely with a version string
+[9:20pm] Russ:
+damian0815, because if its 80ms, you are wasting your time
+[9:20pm] mdp:
+there is only one mainline
+[9:20pm] mdp:
+there is no question about it
+[9:20pm] Russ:
+(at least on the new driver)
+[9:21pm] mdp:
+damian0815: it doesn't refer to a prebuilt binary
+[9:22pm] damian0815:
+mdp: i'm aware of that. but for folks who are new to embedded development it's a binary blob called 'u-boot.img' that, at least on beagle xm, if you get the wrong one you get nothing out your terminal.
+[9:22pm] LetoThe2nd left the chat room. (Quit: leaving)
+[9:22pm] damian0815:
++ if you've never used a terminal before, debugging is hard.
+[9:22pm] damian0815:
+'terminal' == RS232
+[9:23pm] mdp:
+damian0815: http://git.denx.de/cgi-bin/gitweb.cgi?p=u-boot.git;a=summary
+[9:23pm] aleek:
+damian0815: you mean, I should update my x-loader, right?
+[9:23pm] damian0815:
+right. but suppose i'm a newbie and i'm on a Mac and i don't have a cross-compile toolchain installed and in fact i don't know that i _can_ cross-compile
+[9:23pm] damian0815:
+(this is me, 2 years ago)
+[9:24pm] mdp:
+damian0815: yeah, anybody can make a distro and break things, that's true :)
+[9:24pm] damian0815:
+(beagle xM u-boot.img then was a fckn nightmare.)
+[9:24pm] rcn-ee:
+aleek, the x-loader project is dead, u-boot spl replaced it.. So when you built u-boot for the beagle, there should be an MLO and u-boot.img file in the build dir..
+[9:24pm] aholler:
+mac-users are something special
+[9:24pm] damian0815:
+mdp: right but distros are how NORMAL people work with computers :-)
+[9:24pm] aleek:
+rcn-ee: right, there is!
+[9:24pm] rcn-ee:
+;)
+[9:24pm] mru:
+normal people don't buy dev boards
+[9:24pm] damian0815:
+sure they do!
+[9:25pm] damian0815:
+well
+[9:25pm] damian0815:
+there's a transition period between 'normal' and 'embedded linux developer'
+[9:25pm] mdp:
+careful..this channel is mostly made up of abnormals
+[9:25pm] damian0815:
+;-)
+[9:25pm] damian0815:
+it's all with ;-)
+[9:25pm] mdp:
+:)
+[9:26pm] mru:
+mdp: we are perfectly normal trolls
+[9:26pm] damian0815:
+point.. if you've never used an embedded board before, and beagle xm is your starting point, and your u-boot.img mysteriously doesn't work, it's really frustrating.
+[9:26pm] mdp:
+normal people on dev boards should be able to perform the most basic tasks of cloning a git tree and running make
+[9:26pm] damian0815:
+aleek: i'm not sure, honestly. listen to the other folks, they know way more than me.
+[9:26pm] mdp:
+mru, agreed
+[9:26pm] damian0815:
+mdp: whoah. not this (ex-) normal person
+[9:26pm] rcn-ee:
+damian0815, that's why we have irc/email. ;)
+[9:26pm] LetoThe2nd joined the chat room.
+[9:27pm] aholler:
+http://www.theregister.co.uk/2012/04/27/steve_bong_coding_youth/
+[9:27pm] damian0815:
+.. the same irc that thinks that git+make is a 'basic' skill set
+[9:27pm] damian0815:
+;-)
+[9:27pm] damian0815:
+?
+[9:27pm] • damian0815 
+is not trolling, honest
+[9:28pm] _av500_:
+we know you are not
+[9:29pm] • LetoThe2nd 
+offers to sing "youth gone wild"
+[9:29pm] mdp:
+maybe u-boot needs a cynagenmod-like build gui :P
+[9:29pm] jsabeaudry:
+Isn't there a place when you can just download a u-boot like for the bone?
+[9:29pm] thurbad:
+cloning and running make is pretty basic... figuring out how to fix it when something goes sideways.. not so much
+[9:29pm] aleek:
+rcn-ee: it works, thanks!
+[9:29pm] mdp:
+aholler, I think "bong" summed it up for me
+[9:29pm] alexandersalas joined the chat room.
+[9:29pm] _av500_:
+jsabeaudry: there is
+[9:29pm] _av500_:
+the usual place
+[9:29pm] _av500_:
+http://downloads.angstrom-distribution.org/demo/beaglebone/
+[9:30pm] _av500_:
+http://downloads.angstrom-distribution.org/demo/beagleboard/
+[9:30pm] aholler:
+normal people should get scared by electronics without a case
+[9:30pm] thurbad:
+heh
+[9:30pm] mdp:
+it freaks me out a little looking at the lab bench
+[9:31pm] thurbad:
+true but normal people wouldn't consider getting into embedded stuff
+[9:31pm] damian0815:
+Russ: point taken, but for now i don't have a lag problem, i have kernel oops problem that seems due to making ioctl's/read()/write() in a signal handler
+[9:31pm] mdp:
+requires 2 days a week of therapy to work in here
+[9:31pm] djlewis:
+it freaks me out looking at a clean bench :)
+[9:31pm] mdp:
+heh
+[9:31pm] Russ:
+damian0815, I listed functions you could use that would delay without signals
+[9:31pm] BlInK311 left the chat room. (Quit: Leaving)
+[9:31pm] aholler:
+just two weeks?
+[9:31pm] damian0815:
+Russ: + for various reasons poll/select/pselect won't do what i need
+[9:32pm] mdp:
+djlewis: all the intertubes photos of projects show these real clean lab benches…I think those are normal people
+[9:32pm] Russ:
+there were options other than select/poll/pselect
+[9:32pm] damian0815:
+i'm looking through my notes, i can't find them..
+[9:32pm] djlewis:
+mdp: how does one work on only one project at a time ?
+[9:32pm] mru:
+mdp: stock photos and photoshop
+[9:32pm] mdp:
+djlewis, my theory is that it's a hollywood set they use for photoshoots
+[9:33pm] mdp:
+smoke and mirrors
+[9:33pm] Russ:
+there was clock_nanosleep for one
+[9:33pm] mdp:
+mru, aha!
+[9:33pm] Russ:
+and you probably want CLOCK_MONOTONIC
+[9:33pm] damian0815:
+Russ: not sure that CLOCK_MONOTIC would help me as it doesn't track wall clock time
+[9:33pm] mru:
+check the shadows
+[9:33pm] Russ:
+and since you want periodic you want TIMER_ABSTIME
+[9:33pm] damian0815:
+which is what i care about in reducing jitter
+[9:34pm] Russ:
+CLOCK_REALTIME can go backwards
+[9:34pm] mdp:
+so it's established that we need an online builder for mainline u-boot/kernel for normal people..I'll add that to the MRD
+[9:34pm] damian0815:
+'normal people'
+[9:34pm] mdp:
+and probably a way for it to copy to the mmc card for them
+[9:34pm] • djlewis 
+is not aware of any "normals" here
+[9:34pm] mdp:
+maybe we should just put up daily mainline snapshots on ebay sd cards
+[9:35pm] Russ:
+damian0815, why would you think CLOCK_MONOTONIC would not track what you want?
+[9:35pm] _av500_:
+CLOCK_MONOTONIC is fine
+[9:35pm] jsabeaudry:
+djlewis, they keep quiet in fear of getting trolled ;)
+[9:35pm] Russ:
+does it need to be every second UTC? or just every second?
+[9:35pm] djlewis:
+mdp: makes lots o monies :)
+[9:35pm] Russ:
+are you synced to a network clock?
+[9:35pm] _av500_:
+CLOCK_MONOTONIC is fine
+[9:35pm] mdp:
+djlewis: the business plan is sound!
+[9:35pm] damian0815:
+ok, CLOCK_MONOTONIC is fine :-)
+[9:36pm] LetoThe2nd:
+"reveal a normal person in here and two trolled for free."
+[9:36pm] Russ:
+I haven't reviewed this, but it might have some useful stuff
+[9:36pm] Russ:
+http://bec-systems.com/site/175/how-to-implement-realtime-periodic-tasks-in-linux-applications
+[9:37pm] Russ:
+the manpage for clock_nanosleep should also be helpful
+[9:37pm] mru:
+gptimer12 + fiq?
+[9:37pm] damian0815:
+so you're talking about undersleeping in a thread basically? "The suspension time caused by this function may be longer than requested" by how much? my period target is 1ms
+[9:37pm] aholler:
+mdp: I already suggested https://fedorahosted.org/liveusb-creator/ for beagleboard.org
+[9:37pm] Russ:
+check clock_getres
+[9:39pm] _av500_:
+damian0815: since I missed it, what timing are you afer?
+[9:39pm] _av500_:
+after
+[9:39pm] djlewis:
+aholler: but there is no profit in that
+[9:40pm] LetoThe2nd left the chat room. (Quit: leaving)
+[9:40pm] aholler:
+if more people are able to build the needed sd-card, there would be
+[9:40pm] aholler:
+at least for this channel ;)
+[9:41pm] mdp:
+boo
+[9:41pm] damian0815:
+_av500_: short answer, 1ms
+[9:42pm] damian0815:
+_av500_: long answer, i have an audio DSP process with 20ms of latency (looks like 10ms jitter), processing 1 audio block/ms. i want to also read and write to DACs at the same frequency, 1 read/write per ms. i'd just do the i2c/spi comms in the audio processing chain, but i can't do that because a) i can't block in the audio callback and b) i want 1ms jitter here.
+[9:42pm] mdp:
+aholler, no osx version…normal people use macs
+[9:42pm] damian0815:
+(DACs in there, i mean 12 bit control voltage DACs and ADCs, 4x each)
+[9:42pm] aholler:
+mdp: it's just python, so mac should work too
+[9:43pm] aholler:
+but I just assuming that, don't know anything about macs
+[9:43pm] _av500_:
+damian0815: so audio and spi for volume control
+[9:43pm] • kkeller 
+takes offense to that remark mdp
+[9:43pm] _av500_:
+at the same time
+[9:43pm] damian0815:
+more or less yes.
+[9:43pm] mdp:
+kkeller, except for you, of course
+[9:43pm] damian0815:
+spi/i2c input and output.
+[9:43pm] mdp:
+aholler, but it's not "supported"
+[9:43pm] _av500_:
+what for?
+[9:43pm] damian0815:
+analog modular synth module.
+[9:43pm] mdp:
+who do normal people file bugs with on the mac version? :)
+[9:43pm] damian0815:
+adding to this: http://www.addacsystem.com/
+[9:44pm] _av500_:
+NishanthMenon: ask your supervisor to give you a proper PC
+[9:44pm] djlewis:
+damian0815: sunds like a emeb kinda interest
+[9:44pm] NishanthMenon:
+_av500_, :P
+[9:44pm] djlewis:
+s/sunds/sounds
+[9:44pm] damian0815:
+yes i should probably be writing code on a DSP chip instead, but i don't have the skills and i want to be able to run apps like Pure Data, Supercollider and Csound on it.
+[9:45pm] damian0815:
+djlewis: 'emeb'?
+[9:45pm] _av500_:
+should be fine on a BB
+[9:45pm] damian0815:
+should be
+[9:45pm] • _av500_ 
+summons emeb
+[9:45pm] _av500_:
+lets all chant "VCO"
+[9:45pm] NishanthMenon:
+_av500_, i might get one in the next budget alloc :P
+[9:45pm] djlewis:
+damian0815: one of our local non-normals
+[9:45pm] _av500_:
+NishanthMenon: 2015?
+[9:45pm] NishanthMenon:
+_av500_, pretty much close to it
+[9:46pm] mdp:
+kkeller, speaking of normal people…any interest in that ISA cape? :)
+[9:46pm] Russ:
+damian0815, I still really like the idea of using the PRUs
+[9:46pm] djlewis:
+damian0815: emeb does music synth with fpga and beagleboard
+[9:46pm] Russ:
+mdp, who even has XT ISA cards?
+[9:46pm] _av500_:
+damian0815: http://www.fpga.synth.net/
+[9:46pm] mdp:
+Russ, well, I do
+[9:46pm] _av500_:
+Russ: the local landfill
+[9:46pm] kkeller:
+mdp I got rid of all my ISA cards long ago… I think I gave then to you before you moved :D
+[9:47pm] _av500_:
+damian0815: so you need to r/w *both* i2c and spi?
+[9:47pm] mdp:
+Russ, but I did some looking and believe we can support 16-bit as well without a problem
+[9:47pm] _av500_:
+in total sync with pcm processing?
+[9:47pm] mdp:
+Russ, with the multiplexed mode and address latch
+[9:47pm] • djlewis 
+has lots of S-100 cards
+[9:48pm] mdp:
+lots of normal people have ISA cards
+[9:48pm] Russ:
+mdp, still not hot on using an LPC bridge?
+[9:48pm] mdp:
+or so I hear
+[9:48pm] _av500_:
+I dont any more
+[9:48pm] • djlewis 
+spies a old Hercules isa 8bit card hanging on the wall
+[9:48pm] djlewis:
+but it is not mine
+[9:48pm] _av500_:
+hmm, yesm I have an ISA card
+[9:48pm] _av500_:
+an SPDIF in/out one
+[9:48pm] _av500_:
+soldered it maself
+[9:48pm] _av500_:
+never used it
+[9:49pm] damian0815:
+_av500_: not necessarily both, but if i use the SDMMC2 to allow front-panel loading of patches i don't have enough SPI pins on the expansion connector
+[9:49pm] _av500_:
+but I wrote a linux drover for it
+[9:49pm] _av500_:
+driver too
+[9:49pm] aholler:
+I should have an original soundblaster somewhere
+[9:49pm] mdp:
+Russ, well, I was interested in convincing gpmc to do it with some address latches to show it could be done
+[9:49pm] tema left the chat room. (Ping timeout: 245 seconds)
+[9:49pm] mru:
+don't forget a20
+[9:49pm] damian0815:
+_av500_: to run just spi, and i'm concerned about i2c bandwidth, plus using i2c seems to summon some of the buggier aspects of the ALSA driver.
+[9:49pm] ericb2 left the chat room. (Quit: . . . ........)
+[9:49pm] _av500_:
+haha, its this one: http://fjkraan.home.xs4all.nl/digaud/elrad/9408048/
+[9:49pm] mdp:
+Russ, I have to doublecheck how much is on the expansion headers..it may not have all address lines
+[9:50pm] _av500_:
+driver source code for OSS on request
+[9:50pm] mdp:
+Russ, in which case, off to your LPC idea
+[9:50pm] _av500_:
+damian0815: i2c alsa?
+[9:50pm] mdp:
+Russ, the end requirement is to run unmodified linux drivers, of course
+[9:51pm] damian0815:
+_av500_: i mean, it seems filling up the i2c bus makes the communication between ALSA and TWL4030 chip fall over in weird ways.
+[9:51pm] Russ:
+I'm guessing there is quite a bit of bit rot and x86'isms in ISA driver code
+[9:51pm] damian0815:
+_av500_: the beagleboard ALSA driver sucks.
+[9:52pm] mdp:
+Russ, yes, a whole new adventure in ancient h/w
+[9:52pm] mdp:
+Russ, too bad we aren't big endian ;)
+[9:52pm] ericb2 joined the chat room.
+[9:53pm] damian0815:
+_av500_: for example, try launching pd -alsa -inchannels 2 -outchannels 2. or jackd with more or less than 2 buffers of 1024 samples.
+[9:53pm] _av500_:
+i2c and alsa should not interefere
+[9:53pm] _av500_:
+-e
+[9:54pm] damian0815:
+_av500_: shouldn't.
+[9:54pm] damian0815:
+_av500_: i agree.
+[9:54pm] dENNES left the chat room. (Quit: Leaving.)
+[9:55pm] damian0815:
+i've never had reliable alsa on beagle, or beagle xm, or panda, unless i'm using the RtAudio API.
+[9:57pm] damian0815:
+one of these days i'm going to sit down with a debugger and figure out what's wrong. i have a fairly consistent setup here, but no working knowledge of ALSA from the kernel side.
+[9:57pm] damian0815:
+or even of how to debug kernel modules.
+[9:58pm] _av500_:
+printk
+[9:58pm] _av500_:
+thats all you need
+[9:58pm] ppotera joined the chat room.
+[9:58pm] aholler:
+that got replaced by pr_info() and such
+[9:59pm] aholler:
+even easier
+[9:59pm] damian0815:
+'consistent setup' i mean, since yesterday I can create conditions here that cause ALSA with portaudio to die 80% of the time, sometimes immediately and sometimes after a few seconds, and if i'm especially lucky, until i hit enter on my ssh terminal ;-)
+[9:59pm] • djlewis 
+likes lots of blinky led's like on the old altair
+[9:59pm] damian0815:
+urgh printf? really? what's that JTAG thingy for?

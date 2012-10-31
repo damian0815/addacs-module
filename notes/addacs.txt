@@ -1,0 +1,99 @@
+. create addacs_daemon.pd in /usr/local/share/addacs/
+
+#N canvas 196 176 472 403 10;
+#X obj 44 34 netreceive 9999;
+#X obj 300 28 loadbang;
+#X obj 300 58 del 500;
+#X msg 300 88 \; pd dsp 1;
+#X obj 68 59 print netreceive;
+#X obj 85 281 send;
+#X obj 44 153 list split 1;
+#X obj 24 219 list;
+#X obj 44 182 t b a;
+#X obj 24 251 list trim;
+#X text 133 151 use the first word in the message;
+#X text 136 167 as a send target;
+#X connect 0 0 4 0;
+#X connect 0 0 6 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 6 0 8 0;
+#X connect 6 1 7 1;
+#X connect 7 0 9 0;
+#X connect 8 0 7 0;
+#X connect 8 1 5 1;
+#X connect 9 0 5 0;
+
+. create test_output.pd in /usr/local/share/addacs
+
+#N canvas 0 22 450 300 10;
+#X obj 81 54 osc~ 440;
+#X obj 170 89 *~;
+#X obj 136 172 dac~;
+#X obj 171 52 osc~ 0.25;
+#X obj 191 130 *~ 0.2;
+#X connect 0 0 1 0;
+#X connect 1 0 4 0;
+#X connect 3 0 1 1;
+#X connect 4 0 2 0;
+#X connect 4 0 2 1;
+
+. create launch jobs for upstart
+
+ubuntu@beagle-addacs:/etc/init$ cat addacs-dbus.conf
+description "create a dbus for addacs"
+start on starting addacs
+script
+	dbus-launch --auto-syntax > /tmp/dbusbits
+	echo "wrote file " >> /tmp/thing.log
+end script
+
+ubuntu@beagle-addacs:/etc/init$ cat jackd.conf
+# jackd - JACK Audio Connection Kit daemon
+description	"jackd daemon"
+start on (starting addacs 
+		and stopped addacs-dbus)
+stop on stopped addacs
+#expect daemon
+#respawn
+# post-start stanza to allow jackd to fully start
+post-start script
+	sleep 3
+end script
+script
+	echo "jackd reading file" >> /tmp/thing.log
+	eval `cat /tmp/dbusbits`
+	opts="-d alsa -i 2 -o 2"
+	echo "jackd got dbus $DBUS_SESSION_BUS_ADDRESS" >> /tmp/thing.log
+	echo "jackd launching jackd" >> /tmp/thing.log
+	jackd ${opts} >> /tmp/jackd.log 2>&1 
+end script
+
+ubuntu@beagle-addacs:/etc/init$ cat addacs.conf
+# addacs 
+#
+# starts services necessary for the ADDACS beagleboard module
+description	"ADDACS module services"
+start on runlevel [2345]
+stop on runlevel [016]
+#expect daemon
+#respawn
+script
+	echo "addacs reading file " >> /tmp/thing.log
+	eval `cat /tmp/dbusbits`
+	echo "addacs got dbus $DBUS_SESSION_BUS_ADDRESS" >> /tmp/thing.log
+	echo "addacs opening pd" >> /tmp/thing.log
+    pd -jack -nogui -open /usr/local/share/addacs/addacs_daemon.pd >> /tmp/addacs.log 2>&1
+end script
+
+
+. start launch jobs
+
+reboot or 
+$ sudo service addacs start
+
+
+. message pd to open test
+
+echo "pd open test_output.pd /usr/local/share/addacs ;" | pdsend 9999
+
