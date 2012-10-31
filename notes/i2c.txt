@@ -1,12 +1,21 @@
+Physical setup:
+
+. use i2c-2 bus via pins 23/24 on beagle expansion header, 23 = SDA, 24 = SCL
+don't forget level shifters. sparkfun level shifters are bidirectional on tx
+pins, not rx pins.
+
+to test if i2c-2 is working/has devices:
+$ i2cdetect -r 2
+
+
+
+
 $ sudo modprobe i2c_dev
 $ ls /dev/i2c-*
 /dev/i2c-1
 /dev/i2c-3
  ... /dev/i2c-2 is the one exposed by the expansion header, so need a kernel/u-boot that enables i2c-2
 
-
-to test if i2c-2 is working/has devices:
-$ i2cdetect -r 2
 
 communication with the daemon:
 Berkeley sockets: http://stackoverflow.com/questions/6721195/interprocess-communication-with-a-daemon

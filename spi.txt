@@ -1,0 +1,2 @@
+. use mcspi4 on beagleboard header
+. header pins: cs0=16, simo=12, somi=18, clk=20
