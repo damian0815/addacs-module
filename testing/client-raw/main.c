@@ -13,6 +13,7 @@
 
 int mm_fd=-1;
 IPCTestStruct* sharedData=NULL;
+uint8_t copyInToOut = 0;
 
 void cleanup()
 {
@@ -34,8 +35,20 @@ void handleInterrupt()
 
 
 
-int main()
+int main( int argc, char**argv )
 {
+
+	for ( int i=1; i<argc; i++ )
+	{
+		if ( strcmp(argv[i],"-c")==0 )
+			copyInToOut = 1;
+		else 
+		{
+			fprintf(stderr,"bad argument: %s", argv[i]);
+			exit(1);
+		}
+	}
+	
 
 	atexit( cleanup );
 	signal( SIGINT, handleInterrupt );
@@ -67,7 +80,17 @@ int main()
 
 	while ( 1 )
 	{
-		sharedData->bShouldRead = 1;
+		for ( int invisibl=0; invisibl<10; invisibl++ ) {
+			sharedData->bShouldRead = 1;
+			for ( int i=0; i<4 ;i++ )
+			{
+				sharedData->outputs[i]=((sharedData->outputs[i]+1)*!copyInToOut)
+					+ sharedData->inputs[i]*copyInToOut;
+			}
+
+			usleep(1*10);
+		}
+		
 		printf("in: ");
 		for ( int i=0; i<4 ;i ++ )
 		{
@@ -76,12 +99,11 @@ int main()
 		printf(" out: ");
 		for ( int i=0; i<4 ;i++ )
 		{
-			sharedData->outputs[i]++;
 			printf("  %04x", sharedData->outputs[i] );
 		}
 
 		printf("\r");
-		usleep(1*1000);
+		
 	}
 	
 }

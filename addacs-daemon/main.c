@@ -29,12 +29,13 @@ int dac_fd = -1;
 IPCTestStruct* sharedData = 0;
 uint8_t shouldStop = 0;
 uint8_t useTimers = 0;
+uint8_t useI2c = 1;
 timer_t timer;
 // adc has slave address 0x34 = binary 0110100
 #define ADC_ADDRESS 0x33
 
 
-#define SPI_SPEED 100000
+#define SPI_SPEED 65536*32 // max for AD5664 is 50MHz
 #define SPI_BITS_PER_WORD 8
 #define SPI_MODE SPI_CPHA
 
@@ -209,7 +210,7 @@ int dac_setup()
 	}
 	
 
-
+//exit(0);
 
 	return 0;
 }
@@ -345,8 +346,11 @@ void periodicFunction()
 		sharedData->inputs[i] = buf[i];
 #endif
 	
-	for ( int i=0; i<2; i++ )
-		sharedData->inputs[i] = adc_read(i);
+	if ( useI2c ) {
+		for ( int i=0; i<2; i++ )
+			sharedData->inputs[i] = adc_read(i);
+	}
+
 	
 	for ( int i=0; i<2; i++ )
 		dac_write( (0x07), sharedData->outputs[i] );
@@ -404,6 +408,10 @@ int main( int argc, char**argv )
 		{
 			useTimers = 1;
 		}
+		else if ( strcmp(argv[i], "-noi2c")==0 )
+		{
+			useI2c = 0;
+		}
 	}
 		
 	if ( !foreground )
@@ -456,7 +464,7 @@ int main( int argc, char**argv )
 		return 2;
 	}
 		// setup the adc
-	if ( 0 != adc_setup() )
+	if ( useI2c && (0 != adc_setup()) )
 	{
 		return 1;
 	}
